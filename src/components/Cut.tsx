@@ -1,29 +1,28 @@
 import { Box, IconButton } from "@mui/joy"
 import { Grip, X } from "lucide-react"
-import { useRef } from "react"
 import { Rnd } from "react-rnd"
 
 type CutProps = {
-	id: string,
+	containerRef: HTMLDivElement | null
+	id: string
 	onRemove: () => void
 }
 
 export const CUT_SIZE=150
 
 const Cut = ({
+	containerRef,
 	id, 
-	onRemove
+	onRemove,
 }: CutProps) => {
-	const boxRef = useRef(null)
 
 	return (
 		<Box
-			ref={boxRef}
 			id={id}
 			component={Rnd}
 			default={{
-				x: 0,
-				y: 0,
+				x: (containerRef!.clientWidth/2) + window.scrollX - CUT_SIZE,
+				y: window.innerHeight/2 + window.scrollY - CUT_SIZE,
 				width: CUT_SIZE *2,
 				height: CUT_SIZE *2,
 			}}

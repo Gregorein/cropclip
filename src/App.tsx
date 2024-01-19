@@ -6,7 +6,7 @@ import Main from "./components/Main"
 import {saveAs} from "file-saver"
 
 const uuid = () => "xxxxxxxxxxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-		const r = Math.random() * 16 | 0, v = c === "x" ? r : (r & 0x3 | 0x8);
+		const r = Math.random() * 16 | 0, v = c === "x" ? r : ((r & 0x3) | 0x8);
 		return v.toString(16);
 	});
 
@@ -236,6 +236,7 @@ const App = () => {
 						>
 							{cuts.map(id => (
 								<Cut
+									containerRef={cutsRef.current}
 									key={id}
 									id={id}
 									onRemove={() => handleRemoveCut(id)}
