@@ -204,6 +204,30 @@ const App = () => {
 		})
 	}
 
+	// keyboard shortcuts
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "ArrowLeft") {
+				e.preventDefault()
+				setActiveImageIndex((activeImageIndex - 1 + files.length) % files.length)
+			}
+			if (e.key === "ArrowRight") {
+				e.preventDefault()
+				setActiveImageIndex((activeImageIndex + 1) % files.length)
+			}
+			
+			if (e.code === "Space") {
+				e.preventDefault()
+				handleAddCut()
+			}
+		}
+		window.addEventListener("keydown", onKeyDown)
+
+		return () => {
+			window.removeEventListener("keydown", onKeyDown)
+		}
+	}, [activeImageIndex, files])
+
 	return (
 		<Main>
 			<input
