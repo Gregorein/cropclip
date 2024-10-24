@@ -132,7 +132,7 @@ const App = () => {
 			const newCuts = [...cuts]
 
 			newCuts[activeImageIndex] = newCuts[activeImageIndex].map(cut => {
-				const {id, ...rest} = cut
+				const {id} = cut
 				if (cutId !== id) {
 					return cut
 				}
@@ -154,29 +154,39 @@ const App = () => {
 		if (!image) {
 			return
 		}
-
 		const container = cutsRef.current!.getBoundingClientRect()
 
-		cuts.forEach((id, i) => {
-			const node = document!.getElementById(`${id}`)
-			const dimensions = node!.getBoundingClientRect()
-
-			let w = node!.clientWidth + 8
-			let h = node!.clientHeight + 8
-			let x = -(container.left - dimensions.left)
-			let y = -(container.top - dimensions.top)
+		cuts[activeImageIndex].forEach(
+			({
+				id,
+				x: cutX,
+				y: cutY,
+				width,
+				height
+			}, i) => {
+			let w = width
+			let h = height
+			let x = cutX
+			let y = cutY
 
 			const canvas = document.createElement("canvas")
 			const context = canvas.getContext("2d") as CanvasRenderingContext2D
 			
-
-			const iW = image!.naturalWidth
-			const iH = image!.naturalHeight
-
-			x = (x < 0) ? 0 : x
-			y = (y < 0) ? 0 : y
-			w = (w + x > iW) ? (iW - x) : w
-			h = (h + y > iH) ? (iH - y) : h
+			// out of bounds check
+			if (x < 0) {
+				w += x	
+				x = 0
+			}
+			if (y < 0) {
+				h += y	
+				y = 0
+			}
+			if (x + w > image!.naturalWidth) {
+				w = image!.naturalWidth - x
+			}
+			if (y + h > image!.naturalHeight) {
+				h = image!.naturalHeight - y
+			}
 
 			canvas.width = w
 			canvas.height = h
