@@ -1,19 +1,33 @@
 import { Box, IconButton } from "@mui/joy"
 import { Grip, X } from "lucide-react"
-import { Rnd } from "react-rnd"
+import { DraggableData, Rnd } from "react-rnd"
 
-type CutProps = {
-	containerRef: HTMLDivElement | null
+type ResizeDirection = "top" | "right" | "bottom" | "left" | "topRight" | "bottomRight" | "bottomLeft" | "topLeft"
+export type CutType = {
 	id: string
+	x: number
+	y: number
+	width: number
+	height: number
+}
+
+type CutProps = CutType & {
 	onRemove: () => void
+	onMove: (x: number, y: number) => void
+	onResize: (x: number, y: number, width: number, height: number) => void
 }
 
 export const CUT_SIZE=150
 
 const Cut = ({
-	containerRef,
 	id, 
 	onRemove,
+	onMove,
+	onResize,
+	x,
+	y,
+	width,
+	height
 }: CutProps) => {
 
 	return (
@@ -21,10 +35,10 @@ const Cut = ({
 			id={id}
 			component={Rnd}
 			default={{
-				x: (containerRef!.clientWidth/2) + window.scrollX - CUT_SIZE,
-				y: window.innerHeight/2 + window.scrollY - CUT_SIZE,
-				width: CUT_SIZE *2,
-				height: CUT_SIZE *2,
+				x,
+				y,
+				width,
+				height
 			}}
 			sx={{
 				position: "relative",
@@ -45,6 +59,78 @@ const Cut = ({
 					backdropFilter: "brightness(1.2)",
 					borderColor: "primary.500",
 					color: "primary.500",
+				}
+			}}
+			onDragStop={(_:any, d: DraggableData) => onMove(
+				d.lastX + d.deltaX,
+				d.lastY + d.deltaY
+			)}
+			onResizeStop={(_:any, direction: ResizeDirection, elementRef:HTMLElement, delta: {width: number, height: number}) => {
+				switch (direction) {
+					case "bottom":
+						onResize(
+							x,
+							y,
+							width,
+							height + delta.height
+						)
+						break
+					case "left":
+						onResize(
+							x - delta.width,
+							y,
+							width + delta.width,
+							height
+						)
+						break
+					case "right":
+						onResize(
+							x,
+							y,
+							width + delta.width,
+							height
+						)
+						break
+					case "top":
+						onResize(
+							x,
+							y - delta.height,
+							width,
+							height + delta.height
+						)
+						break
+					case "topLeft":
+						onResize(
+							x - delta.width,
+							y - delta.height,
+							width + delta.width,
+							height + delta.height
+						)
+						break
+					case "topRight":
+						onResize(
+							x,
+							y - delta.height,
+							width + delta.width,
+							height + delta.height
+						)
+						break
+					case "bottomLeft":
+						onResize(
+							x - delta.width,
+							y,
+							width + delta.width,
+							height
+						)
+						break
+					case "bottomRight":
+						onResize(
+							x,
+							y,
+							width + delta.width,
+							height
+						)
+						break
 				}
 			}}
 		>

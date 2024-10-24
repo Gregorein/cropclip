@@ -1,7 +1,7 @@
-import { Box, Button, Checkbox, Input, Typography } from "@mui/joy"
-import { Download, ScissorsLineDashed, Undo2 } from "lucide-react"
+import { Box, Button, ButtonGroup, IconButton, Tooltip, Typography } from "@mui/joy"
+import { ArrowLeft, ArrowRight, Download, ScissorsLineDashed, Image as ImageIcon } from "lucide-react"
 import { DragEvent, ChangeEvent, useRef, useState, useEffect } from "react"
-import Cut from "./components/Cut"
+import Cut, { CUT_SIZE, CutType } from "./components/Cut"
 import Main from "./components/Main"
 import {saveAs} from "file-saver"
 
@@ -11,21 +11,39 @@ const uuid = () => "xxxxxxxxxxxxxxxxxxxx".replace(/[xy]/g, (c) => {
 	});
 
 const App = () => {
-	const [cuts, setCuts] = useState<string[]>([])
-
-	const [backgroundColor, setBackgroundColor] = useState("#ffffff")
-	const handleBackgroundColor = (event: ChangeEvent<HTMLInputElement>) => {
-		setBackgroundColor(event.target.value || "white")
-	}
+	const [cuts, setCuts] = useState<CutType[][]>([])
 
 	const inputRef = useRef<HTMLInputElement>(null)
 	const cutsRef = useRef<HTMLDivElement>(null)
 	const canvasRef = useRef<HTMLCanvasElement>(null)
-	const [file, setFile] = useState<File | null>(null)
+	const [files, setFiles] = useState<File[]>([])
+	const handleReceivedFiles = (files: File[]) => {
+		setFiles(files)
+		setCuts(
+			Array(files.length).fill([])
+		)
+	}
 	const [image, setImage] = useState<HTMLImageElement | null>(null)
+	const [activeImageIndex, setActiveImageIndex] = useState(0)
+	const handleNextImage = () => {
+		setActiveImageIndex(
+			(activeImageIndex + 1) % files.length
+		)
+	}
+	const handlePrevImage = () => {
+		setActiveImageIndex(
+			(activeImageIndex - 1 + files.length) % files.length
+		)
+	}
+
 	const handleOnInput = (event: ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files? event.target.files[0] : null
-		file && setFile(file)
+		if (!event.target.files) {
+			return
+		}
+
+		handleReceivedFiles(
+			Array.from(event.target.files)
+		)
 	}
 	const handleOnDrag = (event: DragEvent<HTMLInputElement>) => {
 		event.preventDefault()
@@ -34,11 +52,11 @@ const App = () => {
 		event.preventDefault()
 		event.stopPropagation()
 
-		const file = event.dataTransfer!.files[0]
-		setFile(file)
+		handleReceivedFiles(Array.from(event.dataTransfer!.files))
 	}
+
 	useEffect(() => {
-		if (!file || !canvasRef.current) {
+		if (!files || !canvasRef.current) {
 			return
 		}
 
@@ -53,23 +71,83 @@ const App = () => {
 
 			setImage(img)
 		}
-		img.src = URL.createObjectURL(file)
-	}, [file])
+		img.src = URL.createObjectURL(files[activeImageIndex])
+	}, [files, activeImageIndex])
 
-	const [backgroundCrop, setBackgroundCrop] = useState(false)
+	const handleRemoveCut = (cutId: string) => {
+		if (cuts.length !== files.length) {
+			throw new Error("var cuts length is not equal to var files length")
+		}
+		setCuts((cuts) => {
+			const newCuts = [...cuts]
 
-	const handleRemoveCut = (id: string) => {
-		setCuts(
-			[...cuts].filter(cutId => cutId !== id)
-		)
+			newCuts[activeImageIndex] = newCuts[activeImageIndex].filter(({id,...rest}) => cutId !== id)
+
+			return newCuts
+		})
 	}
 	const handleAddCut = () => {
 		const id = uuid()
 
-		setCuts([
-			...cuts,
-			id
-		])
+		setCuts((cuts) => {
+			const newCuts = [...cuts]
+
+			newCuts[activeImageIndex] = [
+				...newCuts[activeImageIndex],
+				{
+					id,
+					x: (cutsRef.current!.clientWidth/2) + window.scrollX - CUT_SIZE,
+					y: window.innerHeight/2 + window.scrollY - CUT_SIZE,
+					width: CUT_SIZE *2,
+					height: CUT_SIZE *2,
+				}
+			]
+
+			return newCuts
+		})
+	}
+	const handleMoveCut = (cutId: string, x: number, y: number) => {
+		setCuts((cuts) => {
+			const newCuts = [...cuts]
+
+			newCuts[activeImageIndex] = newCuts[activeImageIndex].map(cut => {
+				const {id, ...rest} = cut
+				if (cutId !== id) {
+					return cut
+				}
+
+				return {
+					id,
+					...rest,
+					x,
+					y
+				}
+			})
+
+			return newCuts
+		})
+	}
+	const handleResizeCut = (cutId: string, x: number, y: number, width: number, height: number) => {
+		setCuts((cuts) => {
+			const newCuts = [...cuts]
+
+			newCuts[activeImageIndex] = newCuts[activeImageIndex].map(cut => {
+				const {id, ...rest} = cut
+				if (cutId !== id) {
+					return cut
+				}
+
+				return {
+					id,
+					x,
+					y,
+					width,
+					height
+				}
+			})
+
+			return newCuts
+		})
 	}
 
 	const handleDownload = () => {
@@ -91,19 +169,18 @@ const App = () => {
 			const canvas = document.createElement("canvas")
 			const context = canvas.getContext("2d") as CanvasRenderingContext2D
 			
-			if (backgroundCrop) {
-				const iW = image!.naturalWidth
-				const iH = image!.naturalHeight
 
-				x = (x < 0) ? 0 : x
-				y = (y < 0) ? 0 : y
-				w = (w + x > iW) ? (iW - x) : w
-				h = (h + y > iH) ? (iH - y) : h
-			}
+			const iW = image!.naturalWidth
+			const iH = image!.naturalHeight
+
+			x = (x < 0) ? 0 : x
+			y = (y < 0) ? 0 : y
+			w = (w + x > iW) ? (iW - x) : w
+			h = (h + y > iH) ? (iH - y) : h
 
 			canvas.width = w
 			canvas.height = h
-			context.fillStyle=backgroundColor
+			context.fillStyle="white"
 			context.fillRect(0, 0, w, h)
 			context.drawImage(image, -x, -y)
 
@@ -112,7 +189,7 @@ const App = () => {
 					return
 				}
 
-				saveAs(blob, `${file!.name} (cut ${i+1}).png`)
+				saveAs(blob, `${files[activeImageIndex]!.name} (cut ${i+1}).png`)
 			})
 		})
 	}
@@ -122,11 +199,12 @@ const App = () => {
 			<input
 				ref={inputRef}
 				type="file"
-				style={{"display":"none"}}
+				style={{ display: "none" }}
 				onChange={handleOnInput}
+				multiple
 			/>
 
-			{!file ? (
+			{files.length === 0 ? (
 				<Box
 					component="div"
 					sx={{
@@ -150,7 +228,7 @@ const App = () => {
 						color="primary"
 						level="title-lg"
 					>
-						Click or Drag an image here
+						Click or Drag an image(s) here
 					</Typography> 
 				</Box>
 			) : (
@@ -162,22 +240,20 @@ const App = () => {
 							top: 0,
 							left: 0,
 							padding: 3,
-							height: "96px",
 							gap: 3,
 							width: "100%",
 							display: "flex",
 							justifyContent: "space-between",
-							alignItems: "center",
-							zIndex: 9999,
+							zIndex: 1000,
 							backgroundColor: "primary.50"
 						}}
 					>
 						<Button
 							color="neutral"
-							startDecorator={<Undo2 />}
+							startDecorator={<ImageIcon />}
 							onClick={() => inputRef.current?.click()}
 							>
-							Use new image
+							Load image
 						</Button>
 
 						<Box
@@ -195,36 +271,49 @@ const App = () => {
 								Add cut
 							</Button>
 
-							<Input
-								value={backgroundColor}
-								type="color"
-								placeholder="Background color"
-								onChange={handleBackgroundColor}
-								size="sm"
-							/>
+							{files.length > 1 && (
+								<ButtonGroup color="primary">
+									<IconButton onClick={handlePrevImage}>
+										<ArrowLeft />
+									</IconButton>
+									
+									<Button
+										sx={{
+											pointerEvents: "none"
+										}}
+									>
+										{activeImageIndex + 1} / {files.length}
+									</Button>
 
-							<Checkbox
-								label="Cuts within image"
-								size="sm"
-								onChange={() => setBackgroundCrop(!backgroundCrop)}
-							/>
+									<IconButton onClick={handleNextImage}>
+										<ArrowRight />
+									</IconButton>
+								</ButtonGroup>
+							)}
 						</Box>
 
-						<Button
-							startDecorator={<Download />}
-							onClick={handleDownload}
-							disabled={cuts.length === 0}
+						<Tooltip
+							placement="bottom"
+							title="Download all cuts from this image"
+
 						>
-							Download Images
-						</Button>
+
+							<Button
+								startDecorator={<Download />}
+								onClick={handleDownload}
+								disabled={cuts.length === 0}
+							>
+								Download Images
+							</Button>
+							</Tooltip>
 					</Box>
 
 					<Box
 						sx={{
-							backgroundColor,
-							marginTop: 12,
+							marginTop: "84px",							
 							padding: 3,
 							display: "flex",
+							flex: 1,
 						}}
 					>
 						<Box
@@ -234,12 +323,14 @@ const App = () => {
 								position: "relative"
 							}}
 						>
-							{cuts.map(id => (
+							{cuts[activeImageIndex].map(({id, ...otherProps}) => (
 								<Cut
-									containerRef={cutsRef.current}
 									key={id}
 									id={id}
+									{...otherProps}
 									onRemove={() => handleRemoveCut(id)}
+									onMove={(x, y) => handleMoveCut(id, x, y)}
+									onResize={(x, y, w, h) => handleResizeCut(id, x, y, w, h)}
 								/>
 							))}
 							<Box
