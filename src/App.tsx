@@ -1,40 +1,52 @@
-import { Box, Button, ButtonGroup, IconButton, Typography } from "@mui/joy";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Download,
-  ScissorsLineDashed,
-  Image as ImageIcon,
-} from "lucide-react";
-import { DragEvent, ChangeEvent, useRef, useState, useEffect, useCallback } from "react";
-import Cut, { CUT_SIZE, CutType } from "./components/Cut";
-import Main from "./components/Main";
-import { saveAs } from "file-saver";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  DragEvent,
+  ChangeEvent,
+} from "react";
 import { v4 as uuidv4 } from "uuid";
+import { saveAs } from "file-saver";
+import Main from "./components/Main";
+import SplashScreen from "./components/SplashScreen";
+import Editor from "./components/Editor";
+import { CutType, CUT_SIZE } from "./components/Cut";
+import AboutModal from "./components/AboutModal";
 
 const App = () => {
   const [cuts, setCuts] = useState<CutType[][]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const cutsRef = useRef<HTMLDivElement>(null);
+  const cutsContainerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [canvasWidth, setCanvasWidth] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [downloadedCuts, setDownloadedCuts] = useState<boolean[]>([]);
 
   const handleReceivedFiles = (receivedFiles: File[]) => {
-    const validFiles = receivedFiles.filter((file) => file.type.startsWith("image/"));
+    const validFiles = receivedFiles.filter((file) =>
+      file.type.startsWith("image/")
+    );
     if (validFiles.length !== receivedFiles.length) {
       alert("Some files were not images and have been ignored.");
     }
     setFiles(validFiles);
     setCuts(Array(validFiles.length).fill([]));
+    setDownloadedCuts(Array(validFiles.length).fill(false));
   };
-
+  
   const handleNextImage = () => {
     setActiveImageIndex((prevIndex) => (prevIndex + 1) % files.length);
   };
 
   const handlePrevImage = () => {
-    setActiveImageIndex((prevIndex) => (prevIndex - 1 + files.length) % files.length);
+    setActiveImageIndex(
+      (prevIndex) => (prevIndex - 1 + files.length) % files.length
+    );
   };
 
   const handleOnInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,14 +56,14 @@ const App = () => {
     handleReceivedFiles(Array.from(event.target.files));
   };
 
-  const handleOnDrag = (event: DragEvent<HTMLInputElement>) => {
+  const handleOnDrag = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  const handleOnDrop = (event: DragEvent<HTMLInputElement>) => {
+  const handleOnDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    handleReceivedFiles(Array.from(event.dataTransfer!.files));
+    handleReceivedFiles(Array.from(event.dataTransfer.files));
   };
 
   useEffect(() => {
@@ -64,8 +76,12 @@ const App = () => {
       canvasRef.current!.height = img.naturalHeight;
       canvasRef.current!.width = img.naturalWidth;
 
+      setCanvasWidth(img.naturalWidth);
+      setCanvasHeight(img.naturalHeight);
+
       const context = canvasRef.current!.getContext("2d");
       context?.drawImage(img, 0, 0);
+
       URL.revokeObjectURL(img.src);
     };
     img.src = URL.createObjectURL(files[activeImageIndex]);
@@ -83,10 +99,23 @@ const App = () => {
       });
       return newCuts;
     });
+
+    setDownloadedCuts((prevStatus) => {
+      const newStatus = [...prevStatus];
+      newStatus[activeImageIndex] = false;
+      return newStatus;
+    });
   };
 
   const handleAddCut = () => {
     const id = uuidv4();
+
+    const containerRect = cutsRef.current?.getBoundingClientRect();
+    const containerX = containerRect?.left || 0;
+    const containerY = containerRect?.top || 0;
+
+    const x = window.innerWidth / 2 - containerX - CUT_SIZE;
+    const y = window.innerHeight / 2 - containerY - CUT_SIZE;
 
     setCuts((cuts) => {
       const newCuts = [...cuts];
@@ -94,13 +123,19 @@ const App = () => {
         ...newCuts[activeImageIndex],
         {
           id,
-          x: cutsRef.current!.clientWidth / 2 + window.scrollX - CUT_SIZE,
-          y: window.innerHeight / 2 + window.scrollY - CUT_SIZE,
+          x,
+          y,
           width: CUT_SIZE * 2,
           height: CUT_SIZE * 2,
         },
       ];
       return newCuts;
+    });
+
+    setDownloadedCuts((prevStatus) => {
+      const newStatus = [...prevStatus];
+      newStatus[activeImageIndex] = false;
+      return newStatus;
     });
   };
 
@@ -121,9 +156,21 @@ const App = () => {
 
       return newCuts;
     });
+
+    setDownloadedCuts((prevStatus) => {
+      const newStatus = [...prevStatus];
+      newStatus[activeImageIndex] = false;
+      return newStatus;
+    });
   };
 
-  const handleResizeCut = (cutId: string, x: number, y: number, width: number, height: number) => {
+  const handleResizeCut = (
+    cutId: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => {
     setCuts((cuts) => {
       const newCuts = [...cuts];
 
@@ -142,9 +189,18 @@ const App = () => {
 
       return newCuts;
     });
+
+    setDownloadedCuts((prevStatus) => {
+      const newStatus = [...prevStatus];
+      newStatus[activeImageIndex] = false;
+      return newStatus;
+    });
   };
 
-  const toBlobAsync = (canvas: HTMLCanvasElement, type: string): Promise<Blob | null> => {
+  const toBlobAsync = (
+    canvas: HTMLCanvasElement,
+    type: string
+  ): Promise<Blob | null> => {
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         resolve(blob);
@@ -152,55 +208,63 @@ const App = () => {
     });
   };
 
-	const processCuts = async (
-		img: HTMLImageElement,
-		cutsArray: CutType[],
-		fileName: string
-	) => {
-		for (let i = 0; i < cutsArray.length; i++) {
-			const { x: cutX, y: cutY, width, height } = cutsArray[i];
-	
-			let w = width;
-			let h = height;
-			let x = cutX;
-			let y = cutY;
-	
-			const canvas = document.createElement("canvas");
-			const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-	
-			// Out of bounds check
-			if (x < 0) {
-				w += x;
-				x = 0;
-			}
-			if (y < 0) {
-				h += y;
-				y = 0;
-			}
-			if (x + w > img.naturalWidth) {
-				w = img.naturalWidth - x;
-			}
-			if (y + h > img.naturalHeight) {
-				h = img.naturalHeight - y;
-			}
-	
-			canvas.width = w;
-			canvas.height = h;
-			context.fillStyle = "white";
-			context.fillRect(0, 0, w, h);
-			context.drawImage(img, -x, -y);
-	
-			const blob = await toBlobAsync(canvas, "image/png");
-			if (blob) {
-				saveAs(blob, `${fileName} (cut ${i + 1}).png`);
-			}
-		}
-	};	
+  const processCuts = async (
+    img: HTMLImageElement,
+    index: number
+  ) => {
+    const cutsArray = cuts[index]
+    const fileName = files[index].name
+
+    for (let i = 0; i < cutsArray.length; i++) {
+      const { x: cutX, y: cutY, width, height } = cutsArray[i];
+
+      let w = width;
+      let h = height;
+      let x = cutX;
+      let y = cutY;
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+      // Out of bounds check
+      if (x < 0) {
+        w += x;
+        x = 0;
+      }
+      if (y < 0) {
+        h += y;
+        y = 0;
+      }
+      if (x + w > img.naturalWidth) {
+        w = img.naturalWidth - x;
+      }
+      if (y + h > img.naturalHeight) {
+        h = img.naturalHeight - y;
+      }
+
+      canvas.width = w;
+      canvas.height = h;
+      context.fillStyle = "white";
+      context.fillRect(0, 0, w, h);
+      context.drawImage(img, -x, -y);
+
+      const blob = await toBlobAsync(canvas, "image/png");
+      if (blob) {
+        saveAs(blob, `${fileName} (cut ${i + 1}).png`);
+      }
+    }
+    
+    setDownloadedCuts((prevStatus) => {
+      const newStatus = [...prevStatus];
+      newStatus[index] = true;
+      return newStatus;
+    });
+  };
 
   const handleDownload = async (index: number) => {
     const img = new Image();
     img.onload = async () => {
-      await processCuts(img, cuts[index], files[index].name);
+      await processCuts(img, index);
       URL.revokeObjectURL(img.src);
     };
     img.onerror = () => {
@@ -213,7 +277,7 @@ const App = () => {
     files.forEach((file, index) => {
       const img = new Image();
       img.onload = async () => {
-        await processCuts(img, cuts[index], file.name);
+        await processCuts(img, index);
         URL.revokeObjectURL(img.src);
       };
       img.onerror = () => {
@@ -221,6 +285,42 @@ const App = () => {
       };
       img.src = URL.createObjectURL(file);
     });
+  };
+
+  // Zoom functions
+  const handleZoom = (zoomFactor: number) => {
+    setZoom((prevZoom) => {
+      const newZoom = prevZoom * zoomFactor;
+      return Math.min(Math.max(newZoom, 0.1), 4); // Min 10%, Max 400%
+    });
+  };
+
+  const handleSelectImage = (index: number) => {
+    setActiveImageIndex(index);
+  };  
+
+  const resetZoom = () => {
+    setZoom(1);
+  };
+
+  const fitToWindow = () => {
+    if (!canvasRef.current || !cutsContainerRef.current) return;
+
+    const canvas = canvasRef.current;
+    const container = cutsContainerRef.current;
+
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    const imageWidth = canvas.width;
+    const imageHeight = canvas.height;
+
+    const widthRatio = containerWidth / imageWidth;
+    const heightRatio = containerHeight / imageHeight;
+
+    const newZoom = Math.min(widthRatio, heightRatio);
+
+    setZoom(newZoom);
   };
 
   // Keyboard shortcuts
@@ -249,6 +349,10 @@ const App = () => {
     };
   }, [onKeyDown]);
 
+  const handleLoadImages = () => {
+    inputRef.current?.click();
+  };
+
   return (
     <Main>
       <input
@@ -261,147 +365,40 @@ const App = () => {
       />
 
       {files.length === 0 ? (
-        <Box
-          component="div"
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            placeContent: "center",
-            margin: 3,
-            padding: 3,
-            borderRadius: 8,
-            border: "4px dotted",
-            borderColor: "primary.500",
-            textAlign: "center",
-            cursor: "pointer",
-          }}
-          onClick={() => inputRef.current?.click()}
-          onDragOver={handleOnDrag}
-          onDrop={handleOnDrop}
-        >
-          <Typography color="primary" level="title-lg">
-            Click or Drag an image(s) here
-          </Typography>
-        </Box>
+        <SplashScreen
+          onLoadImages={handleLoadImages}
+          handleOnDrag={handleOnDrag}
+          handleOnDrop={handleOnDrop}
+        />
       ) : (
-        <>
-          <Box
-            component="header"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              padding: 3,
-              gap: 3,
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-              zIndex: 1000,
-              backgroundColor: "primary.50",
-            }}
-          >
-            <Button
-              color="neutral"
-              variant="outlined"
-              startDecorator={<ImageIcon />}
-              onClick={() => inputRef.current?.click()}
-            >
-              Load image
-            </Button>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <Button
-                aria-label="Add a new cut (Shortcut: Space)"
-                title="Add a new cut (Shortcut: Space)"
-                color="success"
-                startDecorator={<ScissorsLineDashed />}
-                onClick={handleAddCut}
-              >
-                Add cut
-              </Button>
-
-              {files.length > 1 && (
-                <ButtonGroup color="primary">
-                  <IconButton onClick={handlePrevImage}>
-                    <ArrowLeft />
-                  </IconButton>
-
-                  <Button
-                    sx={{
-                      pointerEvents: "none",
-                    }}
-                  >
-                    {activeImageIndex + 1} / {files.length}
-                  </Button>
-
-                  <IconButton onClick={handleNextImage}>
-                    <ArrowRight />
-                  </IconButton>
-                </ButtonGroup>
-              )}
-            </Box>
-
-            <ButtonGroup>
-              <Button
-                startDecorator={<Download />}
-                onClick={() => handleDownload(activeImageIndex)}
-                color="primary"
-                disabled={cuts[activeImageIndex].length === 0}
-              >
-                Cut this image
-              </Button>
-
-              {cuts.some((cutsArray) => cutsArray.length > 0) && (
-                <Button startDecorator={<Download />} color="success" onClick={handleDownloadAll}>
-                  Cut all images
-                </Button>
-              )}
-            </ButtonGroup>
-          </Box>
-
-          <Box
-            sx={{
-              marginTop: "84px",
-              padding: 3,
-              display: "flex",
-              flex: 1,
-            }}
-          >
-            <Box
-              ref={cutsRef}
-              sx={{
-                margin: "0 auto",
-                position: "relative",
-              }}
-            >
-              {cuts[activeImageIndex].map(({ id, ...otherProps }) => (
-                <Cut
-                  key={id}
-                  id={id}
-                  {...otherProps}
-                  onRemove={() => handleRemoveCut(id)}
-                  onMove={(x, y) => handleMoveCut(id, x, y)}
-                  onResize={(x, y, w, h) => handleResizeCut(id, x, y, w, h)}
-                />
-              ))}
-              <Box
-                component="canvas"
-                ref={canvasRef}
-                sx={{
-                  pointerEvents: "none",
-                }}
-              />
-            </Box>
-          </Box>
-        </>
+        <Editor
+          files={files}
+          cuts={cuts}
+          activeImageIndex={activeImageIndex}
+          zoom={zoom}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
+          cutsRef={cutsRef}
+          downloadedCuts={downloadedCuts}
+          cutsContainerRef={cutsContainerRef}
+          canvasRef={canvasRef}
+          handleLoadImages={handleLoadImages}
+          handleAddCut={handleAddCut}
+          handlePrevImage={handlePrevImage}
+          handleNextImage={handleNextImage}
+          handleZoom={handleZoom}
+          resetZoom={resetZoom}
+          fitToWindow={fitToWindow}
+          handleDownload={handleDownload}
+          handleDownloadAll={handleDownloadAll}
+          handleRemoveCut={handleRemoveCut}
+          handleMoveCut={handleMoveCut}
+          handleResizeCut={handleResizeCut}
+          handleSelectImage={handleSelectImage}
+        />
       )}
+
+      <AboutModal />
     </Main>
   );
 };
