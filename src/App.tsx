@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, IconButton, Tooltip, Typography } from "@mui/joy"
+import { Box, Button, ButtonGroup, IconButton, Typography } from "@mui/joy"
 import { ArrowLeft, ArrowRight, Download, ScissorsLineDashed, Image as ImageIcon } from "lucide-react"
 import { DragEvent, ChangeEvent, useRef, useState, useEffect } from "react"
 import Cut, { CUT_SIZE, CutType } from "./components/Cut"
@@ -62,13 +62,12 @@ const App = () => {
 
 		const context = canvasRef.current?.getContext("2d")
 
-		var img = new Image()
+		const img = new Image()
 		img.onload = () => {
 			canvasRef.current!.height = img.naturalHeight
 			canvasRef.current!.width = img.naturalWidth
 
 			context?.drawImage(img, 0, 0)
-
 			setImage(img)
 		}
 		img.src = URL.createObjectURL(files[activeImageIndex])
@@ -150,13 +149,15 @@ const App = () => {
 		})
 	}
 
-	const handleDownload = () => {
+
+	const handleDownload = (index: number) => {
 		if (!image) {
 			return
 		}
-		const container = cutsRef.current!.getBoundingClientRect()
 
-		cuts[activeImageIndex].forEach(
+		const img = image
+
+		cuts[index].forEach(
 			({
 				id,
 				x: cutX,
@@ -181,28 +182,87 @@ const App = () => {
 				h += y	
 				y = 0
 			}
-			if (x + w > image!.naturalWidth) {
-				w = image!.naturalWidth - x
+			if (x + w > img!.naturalWidth) {
+				w = img!.naturalWidth - x
 			}
-			if (y + h > image!.naturalHeight) {
-				h = image!.naturalHeight - y
+			if (y + h > img!.naturalHeight) {
+				h = img!.naturalHeight - y
 			}
 
 			canvas.width = w
 			canvas.height = h
 			context.fillStyle="white"
 			context.fillRect(0, 0, w, h)
-			context.drawImage(image, -x, -y)
+			context.drawImage(img, -x, -y)
 
 			canvas.toBlob(blob => {
 				if (!blob) {
 					return
 				}
 
-				saveAs(blob, `${files[activeImageIndex]!.name} (cut ${i+1}).png`)
+				saveAs(blob, `${files[index]!.name} (cut ${i+1}).png`)
 			})
 		})
 	}
+	const handleDownloadAll = () => {
+		files.forEach((file, index) => {
+			const imageCanvas = document.createElement("canvas");
+			const imageContext = imageCanvas.getContext("2d");
+			imageCanvas.style.position = "absolute";
+			imageCanvas.style.top = "-9999px";
+			imageCanvas.style.left = "-9999px";
+			document.body.appendChild(imageCanvas);
+	
+			const img = new Image();
+			img.onload = () => {
+				imageCanvas.height = img.naturalHeight;
+				imageCanvas.width = img.naturalWidth;
+	
+				imageContext!.drawImage(img, 0, 0);
+	
+				cuts[index].forEach(({ id, x: cutX, y: cutY, width, height }, i) => {
+					let w = width;
+					let h = height;
+					let x = cutX;
+					let y = cutY;
+	
+					const canvas = document.createElement("canvas");
+					const context = canvas.getContext("2d");
+	
+					// Out of bounds check
+					if (x < 0) {
+						w += x;
+						x = 0;
+					}
+					if (y < 0) {
+						h += y;
+						y = 0;
+					}
+					if (x + w > img.naturalWidth) {
+						w = img.naturalWidth - x;
+					}
+					if (y + h > img.naturalHeight) {
+						h = img.naturalHeight - y;
+					}
+	
+					canvas.width = w;
+					canvas.height = h;
+					context!.fillStyle = "white"; // Use "white" or any color you prefer
+					context!.fillRect(0, 0, w, h);
+					context!.drawImage(img, -x, -y);
+	
+					canvas.toBlob((blob) => {
+						if (!blob) {
+							return;
+						}
+	
+						saveAs(blob, `${files[index].name} (cut ${i + 1}).png`);
+					});
+				});
+			};
+			img.src = URL.createObjectURL(files[index]);
+		});
+	};	
 
 	// keyboard shortcuts
 	useEffect(() => {
@@ -215,7 +275,7 @@ const App = () => {
 				e.preventDefault()
 				setActiveImageIndex((activeImageIndex + 1) % files.length)
 			}
-			
+
 			if (e.code === "Space") {
 				e.preventDefault()
 				handleAddCut()
@@ -226,7 +286,7 @@ const App = () => {
 		return () => {
 			window.removeEventListener("keydown", onKeyDown)
 		}
-	}, [activeImageIndex, files])
+	}, [activeImageIndex, files]) // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<Main>
@@ -284,6 +344,7 @@ const App = () => {
 					>
 						<Button
 							color="neutral"
+							variant="outlined"
 							startDecorator={<ImageIcon />}
 							onClick={() => inputRef.current?.click()}
 							>
@@ -326,20 +387,26 @@ const App = () => {
 							)}
 						</Box>
 
-						<Tooltip
-							placement="bottom"
-							title="Download all cuts from this image"
-
-						>
-
+						<ButtonGroup>
 							<Button
 								startDecorator={<Download />}
-								onClick={handleDownload}
+								onClick={() => handleDownload(activeImageIndex)}
+								color="primary"
 								disabled={cuts.length === 0}
 							>
-								Download Images
+								Cut this image
 							</Button>
-							</Tooltip>
+
+							{cuts.length > 1 && (
+								<Button
+									startDecorator={<Download />}
+									color="success"
+									onClick={handleDownloadAll}
+								>
+									Cut all {cuts.length} images
+								</Button>
+							)}							
+						</ButtonGroup>
 					</Box>
 
 					<Box
