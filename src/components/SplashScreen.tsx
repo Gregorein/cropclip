@@ -43,7 +43,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
         color="primary.500"
       />
       <Typography color="primary" level="h3" sx={{ mt: 2 }}>
-        Click or Drag an image(s) here
+        click or drop images here
       </Typography>
       {/* Suggestion: Add a descriptive subtitle */}
       <Typography color="neutral" level="body-md" sx={{ mt: 1 }}>

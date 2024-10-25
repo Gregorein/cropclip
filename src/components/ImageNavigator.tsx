@@ -286,7 +286,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         <Button
           startDecorator={<ImageDown />}
           onClick={() => handleDownload(activeImageIndex)}
-          // disabled={!hasCuts}
+          disabled={!hasCuts}
           fullWidth
           sx={{
             whiteSpace: "nowrap",
@@ -294,10 +294,10 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         >
           Cut image
         </Button>
-        {/* {hasCutsInAnyImage && ( */}
+        {hasCutsInAnyImage && (
           <Button
             onClick={() => handleDownloadAll()}
-            // disabled={!hasCuts}
+            disabled={!hasCuts}
             color="success"
             fullWidth
             sx={{
@@ -306,7 +306,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
           >
             Cut all
           </Button>
-        {/* )} */}
+        )}
       </ButtonGroup>
     </Box>
   );

@@ -75,15 +75,13 @@ const Editor: React.FC<EditorProps> = ({
 
       const container = cutsContainerRef.current;
 
-      const containerRect = container.getBoundingClientRect();
-
       const scrollLeft = container.scrollLeft;
       const scrollTop = container.scrollTop;
 
       const x = scrollLeft / zoom;
       const y = scrollTop / zoom;
-      const width = containerRect.width / zoom;
-      const height = containerRect.height / zoom;
+      const width = container.clientWidth / zoom;
+      const height = container.clientHeight / zoom;
 
       setViewport({ x, y, width, height });
     };
@@ -122,11 +120,12 @@ const Editor: React.FC<EditorProps> = ({
       <Box
         sx={{
           padding: 3,
-          display: "block",
-          flex: 1,
           overflow: "auto",
           alignItems: "center",
           justifyContent: "center",
+          flexGrow: 1,
+          minHeight: 0,
+          minWidth: 0,
         }}
         ref={cutsContainerRef}
       >
@@ -146,19 +145,19 @@ const Editor: React.FC<EditorProps> = ({
         cutsContainerRef={cutsContainerRef}
         zoom={zoom}
         files={files}
+        cuts={cuts}
+        downloadedCuts={downloadedCuts}
         activeImageIndex={activeImageIndex}
         onPrevImage={handlePrevImage}
         onNextImage={handleNextImage}
         onSelectImage={handleSelectImage}
-        canvasWidth={canvasWidth}
-        canvasHeight={canvasHeight}
-        viewport={viewport}
-        cuts={cuts}
-        downloadedCuts={downloadedCuts}
         handleDownload={handleDownload}
         handleDownloadAll={handleDownloadAll}
         hasCuts={cuts[activeImageIndex]?.length > 0}
-        hasCutsInAnyImage={cuts.some((cuts) => cuts.length > 0)}
+        hasCutsInAnyImage={cuts.some((cutsArray) => cutsArray.length > 0)}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+        viewport={viewport}
       />
     </>
   );

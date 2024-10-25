@@ -51,7 +51,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </Tooltip>
 
       <Tooltip title="Add a new cut (Shortcut: Space)" placement="right">
-        <IconButton onClick={onAddCut} color="success">
+        <IconButton onClick={onAddCut} variant="solid" color="success">
           <ScissorsLineDashed />
         </IconButton>
       </Tooltip>

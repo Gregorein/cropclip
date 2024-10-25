@@ -1,4 +1,4 @@
-import React, {
+import {
   useRef,
   useState,
   useEffect,
@@ -13,32 +13,38 @@ import SplashScreen from "./components/SplashScreen";
 import Editor from "./components/Editor";
 import { CutType, CUT_SIZE } from "./components/Cut";
 import AboutModal from "./components/AboutModal";
+import { handleFileSelection, toBlobAsync } from "./utils";
 
 const App = () => {
+  // State declarations
+  const [files, setFiles] = useState<File[]>([]);
   const [cuts, setCuts] = useState<CutType[][]>([]);
+  const [downloadedCuts, setDownloadedCuts] = useState<boolean[]>([]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [canvasWidth, setCanvasWidth] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
+
+  // Refs
   const inputRef = useRef<HTMLInputElement>(null);
   const cutsRef = useRef<HTMLDivElement>(null);
   const cutsContainerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
-  const [canvasWidth, setCanvasWidth] = useState(0);
-  const [canvasHeight, setCanvasHeight] = useState(0);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [zoom, setZoom] = useState(1);
-  const [downloadedCuts, setDownloadedCuts] = useState<boolean[]>([]);
 
+  // Handle file selection
   const handleReceivedFiles = (receivedFiles: File[]) => {
-    const validFiles = receivedFiles.filter((file) =>
-      file.type.startsWith("image/")
-    );
-    if (validFiles.length !== receivedFiles.length) {
-      alert("Some files were not images and have been ignored.");
-    }
+    const {
+      validFiles,
+      initialCuts,
+      initialDownloadedCuts,
+    } = handleFileSelection(receivedFiles);
+
     setFiles(validFiles);
-    setCuts(Array(validFiles.length).fill([]));
-    setDownloadedCuts(Array(validFiles.length).fill(false));
+    setCuts(initialCuts);
+    setDownloadedCuts(initialDownloadedCuts);
   };
-  
+
+  // Image navigation handlers
   const handleNextImage = () => {
     setActiveImageIndex((prevIndex) => (prevIndex + 1) % files.length);
   };
@@ -49,6 +55,11 @@ const App = () => {
     );
   };
 
+  const handleSelectImage = (index: number) => {
+    setActiveImageIndex(index);
+  };
+
+  // File input handlers
   const handleOnInput = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
       return;
@@ -66,6 +77,7 @@ const App = () => {
     handleReceivedFiles(Array.from(event.dataTransfer.files));
   };
 
+  // Load and display the current image
   useEffect(() => {
     if (!files.length || !canvasRef.current) {
       return;
@@ -91,22 +103,7 @@ const App = () => {
     };
   }, [files, activeImageIndex]);
 
-  const handleRemoveCut = (cutId: string) => {
-    setCuts((cuts) => {
-      const newCuts = cuts.map((cutsArray, index) => {
-        if (index !== activeImageIndex) return cutsArray;
-        return cutsArray.filter((cut) => cut.id !== cutId);
-      });
-      return newCuts;
-    });
-
-    setDownloadedCuts((prevStatus) => {
-      const newStatus = [...prevStatus];
-      newStatus[activeImageIndex] = false;
-      return newStatus;
-    });
-  };
-
+  // Cut manipulation handlers
   const handleAddCut = () => {
     const id = uuidv4();
 
@@ -132,11 +129,19 @@ const App = () => {
       return newCuts;
     });
 
-    setDownloadedCuts((prevStatus) => {
-      const newStatus = [...prevStatus];
-      newStatus[activeImageIndex] = false;
-      return newStatus;
+    resetDownloadedStatus(activeImageIndex);
+  };
+
+  const handleRemoveCut = (cutId: string) => {
+    setCuts((cuts) => {
+      const newCuts = cuts.map((cutsArray, index) => {
+        if (index !== activeImageIndex) return cutsArray;
+        return cutsArray.filter((cut) => cut.id !== cutId);
+      });
+      return newCuts;
     });
+
+    resetDownloadedStatus(activeImageIndex);
   };
 
   const handleMoveCut = (cutId: string, x: number, y: number) => {
@@ -157,11 +162,7 @@ const App = () => {
       return newCuts;
     });
 
-    setDownloadedCuts((prevStatus) => {
-      const newStatus = [...prevStatus];
-      newStatus[activeImageIndex] = false;
-      return newStatus;
-    });
+    resetDownloadedStatus(activeImageIndex);
   };
 
   const handleResizeCut = (
@@ -190,30 +191,22 @@ const App = () => {
       return newCuts;
     });
 
+    resetDownloadedStatus(activeImageIndex);
+  };
+
+  // Reset download status for an image
+  const resetDownloadedStatus = (index: number) => {
     setDownloadedCuts((prevStatus) => {
       const newStatus = [...prevStatus];
-      newStatus[activeImageIndex] = false;
+      newStatus[index] = false;
       return newStatus;
     });
   };
 
-  const toBlobAsync = (
-    canvas: HTMLCanvasElement,
-    type: string
-  ): Promise<Blob | null> => {
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, type);
-    });
-  };
-
-  const processCuts = async (
-    img: HTMLImageElement,
-    index: number
-  ) => {
-    const cutsArray = cuts[index]
-    const fileName = files[index].name
+  // Process cuts and save images
+  const processCuts = async (img: HTMLImageElement, index: number, cuts: CutType[][], files: File[], setDownloadedCuts: React.Dispatch<React.SetStateAction<boolean[]>>) => {
+    const cutsArray = cuts[index];
+    const fileName = files[index].name;
 
     for (let i = 0; i < cutsArray.length; i++) {
       const { x: cutX, y: cutY, width, height } = cutsArray[i];
@@ -253,7 +246,8 @@ const App = () => {
         saveAs(blob, `${fileName} (cut ${i + 1}).png`);
       }
     }
-    
+
+    // Update downloadedCuts after processing all cuts
     setDownloadedCuts((prevStatus) => {
       const newStatus = [...prevStatus];
       newStatus[index] = true;
@@ -261,10 +255,11 @@ const App = () => {
     });
   };
 
+  // Download handlers
   const handleDownload = async (index: number) => {
     const img = new Image();
     img.onload = async () => {
-      await processCuts(img, index);
+      await processCuts(img, index, cuts, files, setDownloadedCuts);
       URL.revokeObjectURL(img.src);
     };
     img.onerror = () => {
@@ -277,7 +272,7 @@ const App = () => {
     files.forEach((file, index) => {
       const img = new Image();
       img.onload = async () => {
-        await processCuts(img, index);
+        await processCuts(img, index, cuts, files, setDownloadedCuts);
         URL.revokeObjectURL(img.src);
       };
       img.onerror = () => {
@@ -294,10 +289,6 @@ const App = () => {
       return Math.min(Math.max(newZoom, 0.1), 4); // Min 10%, Max 400%
     });
   };
-
-  const handleSelectImage = (index: number) => {
-    setActiveImageIndex(index);
-  };  
 
   const resetZoom = () => {
     setZoom(1);
@@ -374,12 +365,12 @@ const App = () => {
         <Editor
           files={files}
           cuts={cuts}
+          downloadedCuts={downloadedCuts}
           activeImageIndex={activeImageIndex}
           zoom={zoom}
           canvasWidth={canvasWidth}
           canvasHeight={canvasHeight}
           cutsRef={cutsRef}
-          downloadedCuts={downloadedCuts}
           cutsContainerRef={cutsContainerRef}
           canvasRef={canvasRef}
           handleLoadImages={handleLoadImages}
