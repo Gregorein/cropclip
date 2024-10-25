@@ -10,8 +10,12 @@ import {
   Badge,
   ButtonGroup,
   Button,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
 } from "@mui/joy";
-import { ArrowLeft, ArrowRight, ImageDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileArchive, ImageDown, XCircle } from "lucide-react";
 import { useTheme } from "@mui/joy/styles";
 import { CutType } from "./Cut";
 
@@ -21,8 +25,6 @@ type ImageNavigatorProps = {
   onPrevImage: () => void;
   onNextImage: () => void;
   onSelectImage: (index: number) => void;
-  canvasWidth: number;
-  canvasHeight: number;
   viewport: { x: number; y: number; width: number; height: number };
   cutsContainerRef: React.RefObject<HTMLDivElement>;
   zoom: number;
@@ -32,6 +34,7 @@ type ImageNavigatorProps = {
   handleDownloadAll: () => void;
   hasCuts: boolean;
   hasCutsInAnyImage: boolean;
+  handleRemoveCut: (index: number, cutId: string) => void;
 };
 
 const ImageNavigator: React.FC<ImageNavigatorProps> = ({
@@ -40,8 +43,6 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   onPrevImage,
   onNextImage,
   onSelectImage,
-  canvasWidth,
-  canvasHeight,
   viewport,
   cutsContainerRef,
   zoom,
@@ -51,6 +52,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   handleDownloadAll,
   hasCuts,
   hasCutsInAnyImage,
+  handleRemoveCut,
 }) => {
   const previewRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
@@ -58,6 +60,65 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const devicePixelRatio = window.devicePixelRatio || 1;
+  const [cutPreviews, setCutPreviews] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    return () => {
+      // Clean up all object URLs
+      Object.values(cutPreviews).forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [cutPreviews]);  
+
+  const getCutPreviewUrl = (imageIndex: number, cut: CutType): string => {
+    const key = `${imageIndex}-${cut.id}`;
+    if (cutPreviews[key]) {
+      return cutPreviews[key];
+    } else {
+      generateCutPreview(imageIndex, cut);
+      return "";
+    }
+  };
+  
+  const generateCutPreview = (imageIndex: number, cut: CutType) => {
+    const file = files[imageIndex];
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d")!;
+      const { x, y, width, height } = cut;
+  
+      canvas.width = 32;
+      canvas.height = 32;
+  
+      // Calculate scale to fit the cut into the preview size
+      const scale = Math.min(32 / width, 32 / height);
+  
+      const drawWidth = width * scale;
+      const drawHeight = height * scale;
+  
+      context.drawImage(
+        img,
+        x,
+        y,
+        width,
+        height,
+        (32 - drawWidth) / 2,
+        (32 - drawHeight) / 2,
+        drawWidth,
+        drawHeight
+      );
+  
+      const dataUrl = canvas.toDataURL("image/png");
+  
+      setCutPreviews((prev) => ({
+        ...prev,
+        [`${imageIndex}-${cut.id}`]: dataUrl,
+      }));
+    };
+    img.src = URL.createObjectURL(file);
+  };  
 
   useEffect(() => {
     if (!previewRef.current || files.length === 0) return;
@@ -192,7 +253,8 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         borderRadius: "md",
         boxShadow: "md",
         width: 220,
-        maxHeight: "80vh",
+        maxHeight: "calc(100vh - 32px)",
+        overflow: "hidden",
       }}
     >
       {/* Image Preview Section */}
@@ -250,39 +312,107 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
       </Box>
 
       {/* Scrollable List of Image Names */}
-      <Box sx={{ overflowY: "auto", flex: 1 }}>
-        <List
-          sx={{
-            "--ListItem-minHeight": "32px",
-          }}
-        >
-          {files.map((file, index) => (
-            <ListItem key={index}>
-              <ListItemButton
-                selected={index === activeImageIndex}
-                onClick={() => onSelectImage(index)}
-              >
-              <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-                <Typography noWrap sx={{ fontSize: "12px", flexGrow: 1 }}>
-                  {file.name}
-                </Typography>
-                {cuts[index]?.length > 0 && (
-                  <Badge
-                    badgeContent={cuts[index].length}
-                    color="primary"
-                    size="sm"
-                    variant={(index === activeImageIndex) ? "solid" : "outlined"}
-                    sx={{ ml: 1 }}
-                  />
-                )}
-              </Box>
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
+      <List
+        sx={{
+          "--ListItem-minHeight": "32px",
+          overflowY: "auto",
+          flex: 1,
+        }}
+      >
+        {files.map((file, index) => {
+          const cutsCount = cuts[index]?.length || 0;
+          const hasCuts = cutsCount > 0;
 
-      <ButtonGroup variant="soft">
+          return (
+            <React.Fragment key={index}>
+              {hasCuts ? (
+                // Accordion for images with cuts
+                <Accordion sx={{ bgcolor: downloadedCuts[index] ? "success.200" : "transparent" }}>
+                  <AccordionSummary
+                    // expandIcon={<ChevronDown />}
+                    // sx={{
+                    //   padding: "0 8px",
+                    //   minHeight: "32px",
+                    //   "&.Mui-expanded": { minHeight: "32px" },
+                    // }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+                      <Typography
+                        noWrap
+                        sx={{ fontSize: "12px", flexGrow: 1 }}
+                        onClick={() => onSelectImage(index)}
+                      >
+                        {file.name}
+                      </Typography>
+                      <Badge
+                        badgeContent={cutsCount}
+                        color="primary"
+                        size="sm"
+                        variant={index === activeImageIndex ? "solid" : "outlined"}
+                        sx={{ ml: 1 }}
+                      />
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ padding: 0 }}>
+                    <List>
+                      {cuts[index].map((cut) => (
+                        <ListItem key={cut.id} sx={{ padding: "4px 8px" }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              width: "100%",
+                            }}
+                          >
+                            {/* Cut Image Preview */}
+                            <Avatar
+                              variant="outlined"
+                              src={getCutPreviewUrl(index, cut)}
+                              sx={{ width: 32, height: 32, mr: 1 }}
+                            />
+                            <Typography sx={{ fontSize: "12px", flexGrow: 1 }}>
+                              Cut {cuts[index].indexOf(cut) + 1}
+                            </Typography>
+                            {/* Remove Cut Button */}
+                            <IconButton
+                              size="sm"
+                              variant="plain"
+                              color="danger"
+                              onClick={() => handleRemoveCut(index, cut.id)}
+                            >
+                              <XCircle size={16} />
+                            </IconButton>
+                          </Box>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
+              ) : (
+                // Simple List Item for images without cuts
+                <ListItem>
+                  <ListItemButton
+                    selected={index === activeImageIndex}
+                    onClick={() => onSelectImage(index)}
+                    sx={{
+                      padding: "4px 8px",
+                      bgcolor: downloadedCuts[index] ? "success.200" : "transparent",
+                    }}
+                  >
+                    <Typography noWrap sx={{ fontSize: "12px", flexGrow: 1 }}>
+                      {file.name}
+                    </Typography>
+                  </ListItemButton>
+                </ListItem>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </List>
+
+
+      {/* Download Buttons */}
+      <ButtonGroup variant="soft" orientation="vertical">
         <Button
           startDecorator={<ImageDown />}
           onClick={() => handleDownload(activeImageIndex)}
@@ -291,12 +421,14 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
           sx={{
             whiteSpace: "nowrap",
           }}
+          
         >
-          Cut image
+          Cut current image
         </Button>
         {hasCutsInAnyImage && (
           <Button
             onClick={() => handleDownloadAll()}
+            startDecorator={<FileArchive />}
             disabled={!hasCuts}
             color="success"
             fullWidth
@@ -304,7 +436,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            Cut all
+            Cut & zip all images
           </Button>
         )}
       </ButtonGroup>

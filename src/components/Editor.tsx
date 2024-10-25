@@ -25,7 +25,7 @@ type EditorProps = {
   fitToWindow: () => void;
   handleDownload: (index: number) => void;
   handleDownloadAll: () => void;
-  handleRemoveCut: (cutId: string) => void;
+  handleRemoveCut: (imageIndex: number, cutId: string) => void;
   handleMoveCut: (cutId: string, x: number, y: number) => void;
   handleResizeCut: (
     cutId: string,
@@ -131,7 +131,7 @@ const Editor: React.FC<EditorProps> = ({
       >
         <ImageCanvas
           cuts={cuts[activeImageIndex]}
-          onRemoveCut={handleRemoveCut}
+          onRemoveCut={(id) => handleRemoveCut(activeImageIndex, id)}
           onMoveCut={handleMoveCut}
           onResizeCut={handleResizeCut}
           canvasRef={canvasRef}
@@ -155,9 +155,8 @@ const Editor: React.FC<EditorProps> = ({
         handleDownloadAll={handleDownloadAll}
         hasCuts={cuts[activeImageIndex]?.length > 0}
         hasCutsInAnyImage={cuts.some((cutsArray) => cutsArray.length > 0)}
-        canvasWidth={canvasWidth}
-        canvasHeight={canvasHeight}
         viewport={viewport}
+        handleRemoveCut={handleRemoveCut}
       />
     </>
   );

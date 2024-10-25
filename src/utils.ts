@@ -1,5 +1,6 @@
 import { saveAs } from "file-saver";
 import { CutType } from "./components/Cut";
+import JSZip from "jszip";
 
 // Function to handle file selection and validation
 export const handleFileSelection = (receivedFiles: File[]) => {
@@ -33,7 +34,8 @@ export const processCuts = async (
   index: number,
   cuts: CutType[][],
   files: File[],
-  setDownloadedCuts: React.Dispatch<React.SetStateAction<boolean[]>>
+  setDownloadedCuts: React.Dispatch<React.SetStateAction<boolean[]>>,
+  zip?: JSZip
 ) => {
   const cutsArray = cuts[index];
   const fileName = files[index].name;
@@ -73,7 +75,12 @@ export const processCuts = async (
 
     const blob = await toBlobAsync(canvas, "image/png");
     if (blob) {
-      saveAs(blob, `${fileName} (cut ${i + 1}).png`);
+      if (zip) {
+        const cutFileName = `${fileName} (cut ${i + 1}).png`;
+        zip.file(cutFileName, blob);
+      } else {
+        saveAs(blob, `${fileName} (cut ${i + 1}).png`);
+      }
     }
   }
 

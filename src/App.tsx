@@ -7,13 +7,14 @@ import {
   ChangeEvent,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import Main from "./components/Main";
 import SplashScreen from "./components/SplashScreen";
 import Editor from "./components/Editor";
 import { CutType, CUT_SIZE } from "./components/Cut";
 import AboutModal from "./components/AboutModal";
-import { handleFileSelection, toBlobAsync } from "./utils";
+import { handleFileSelection, processCuts } from "./utils";
 
 const App = () => {
   // State declarations
@@ -132,16 +133,16 @@ const App = () => {
     resetDownloadedStatus(activeImageIndex);
   };
 
-  const handleRemoveCut = (cutId: string) => {
+  const handleRemoveCut = (imageIndex: number, cutId: string) => {
     setCuts((cuts) => {
       const newCuts = cuts.map((cutsArray, index) => {
-        if (index !== activeImageIndex) return cutsArray;
+        if (index !== imageIndex) return cutsArray;
         return cutsArray.filter((cut) => cut.id !== cutId);
       });
       return newCuts;
     });
 
-    resetDownloadedStatus(activeImageIndex);
+    resetDownloadedStatus(imageIndex);
   };
 
   const handleMoveCut = (cutId: string, x: number, y: number) => {
@@ -203,58 +204,6 @@ const App = () => {
     });
   };
 
-  // Process cuts and save images
-  const processCuts = async (img: HTMLImageElement, index: number, cuts: CutType[][], files: File[], setDownloadedCuts: React.Dispatch<React.SetStateAction<boolean[]>>) => {
-    const cutsArray = cuts[index];
-    const fileName = files[index].name;
-
-    for (let i = 0; i < cutsArray.length; i++) {
-      const { x: cutX, y: cutY, width, height } = cutsArray[i];
-
-      let w = width;
-      let h = height;
-      let x = cutX;
-      let y = cutY;
-
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-
-      // Out of bounds check
-      if (x < 0) {
-        w += x;
-        x = 0;
-      }
-      if (y < 0) {
-        h += y;
-        y = 0;
-      }
-      if (x + w > img.naturalWidth) {
-        w = img.naturalWidth - x;
-      }
-      if (y + h > img.naturalHeight) {
-        h = img.naturalHeight - y;
-      }
-
-      canvas.width = w;
-      canvas.height = h;
-      context.fillStyle = "white";
-      context.fillRect(0, 0, w, h);
-      context.drawImage(img, -x, -y);
-
-      const blob = await toBlobAsync(canvas, "image/png");
-      if (blob) {
-        saveAs(blob, `${fileName} (cut ${i + 1}).png`);
-      }
-    }
-
-    // Update downloadedCuts after processing all cuts
-    setDownloadedCuts((prevStatus) => {
-      const newStatus = [...prevStatus];
-      newStatus[index] = true;
-      return newStatus;
-    });
-  };
-
   // Download handlers
   const handleDownload = async (index: number) => {
     const img = new Image();
@@ -269,17 +218,38 @@ const App = () => {
   };
 
   const handleDownloadAll = () => {
-    files.forEach((file, index) => {
-      const img = new Image();
-      img.onload = async () => {
-        await processCuts(img, index, cuts, files, setDownloadedCuts);
-        URL.revokeObjectURL(img.src);
-      };
-      img.onerror = () => {
-        console.error(`Failed to load image: ${file.name}`);
-      };
-      img.src = URL.createObjectURL(file);
+    const zip = new JSZip();
+
+    const imagePromises = files.map((file, index) => {
+      return new Promise<void>((resolve, reject) => {
+        if (cuts[index]?.length === 0) {
+          resolve(); // Skip images without cuts
+          return;
+        }
+        const img = new Image();
+        img.onload = async () => {
+          await processCuts(img, index, cuts, files, setDownloadedCuts, zip);
+          URL.revokeObjectURL(img.src);
+          resolve();
+        };
+        img.onerror = () => {
+          console.error(`Failed to load image: ${file.name}`);
+          reject();
+        };
+        img.src = URL.createObjectURL(file);
+      });
     });
+  
+    Promise.all(imagePromises)
+      .then(() => {
+        // Generate the ZIP file and trigger download
+        zip.generateAsync({ type: "blob" }).then((content) => {
+          saveAs(content, "all_cuts.zip");
+        });
+      })
+      .catch((error) => {
+        console.error("Error processing cuts:", error);
+      });
   };
 
   // Zoom functions
