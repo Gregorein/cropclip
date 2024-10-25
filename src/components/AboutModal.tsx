@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { IconButton, Modal, Box, Typography, Link } from "@mui/joy";
+import { IconButton, Modal, Box, Typography, Link, Switch, useColorScheme } from "@mui/joy";
 import { Crop, HelpCircle } from "lucide-react";
 import packageJson from "../../package.json";
 
 const AboutModal: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const { mode, setMode } = useColorScheme();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -19,6 +20,9 @@ const AboutModal: React.FC = () => {
     bgcolor: "background.surface",
     borderRadius: "md",
     boxShadow: "lg",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
     p: 3,
   };
 
@@ -45,6 +49,7 @@ const AboutModal: React.FC = () => {
             mb: 2,
             display: "flex",
             alignItems: "center",
+            gap: 1
           }}
           >
             <Typography level="title-lg" component="h2">
@@ -52,12 +57,12 @@ const AboutModal: React.FC = () => {
             </Typography>
             <Box component={Crop} sx={{ ml: 0.5, strokeWidth: 3 }} size={21}  color="primary.500" />
           </Box>
-          <Typography sx={{ mb: 2 }}>
+          <Typography>
             CropClip is a simple tool to cut out sections from your images.
             Load your images, add cuts, adjust them, and download the cropped
             sections.
           </Typography>
-          <Typography sx={{ mb: 2 }}>
+          <Typography>
             Keyboard Shortcuts:
             <ul>
               <li>
@@ -68,7 +73,17 @@ const AboutModal: React.FC = () => {
               </li>
             </ul>
           </Typography>
-          <Typography sx={{ mb: 2 }}>
+
+          <Box sx={{ display: 'flex', alignItems: 'center'}}>
+            <Typography sx={{ mr: 1 }}>Dark Mode</Typography>
+            <Switch
+              checked={mode === 'dark'}
+              onChange={() => setMode(mode === 'light' ? 'dark' : 'light')}
+              variant="outlined"
+            />
+          </Box>
+
+          <Typography>
             <Link
               href="https://github.com/Gregorein/cropclip"
               target="_blank"
