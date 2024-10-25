@@ -57,11 +57,15 @@ const AboutModal: React.FC = () => {
             </Typography>
             <Box component={Crop} sx={{ ml: 0.5, strokeWidth: 3 }} size={21}  color="primary.500" />
           </Box>
+
+          {/** description */}
           <Typography>
             CropClip is a simple tool to cut out sections from your images.
             Load your images, add cuts, adjust them, and download the cropped
             sections.
           </Typography>
+
+          {/** keyboard shortcuts */}
           <Typography>
             Keyboard Shortcuts:
             <ul>
@@ -74,6 +78,7 @@ const AboutModal: React.FC = () => {
             </ul>
           </Typography>
 
+          {/** mode toggle */}
           <Box sx={{ display: 'flex', alignItems: 'center'}}>
             <Typography sx={{ mr: 1 }}>Dark Mode</Typography>
             <Switch
@@ -83,13 +88,22 @@ const AboutModal: React.FC = () => {
             />
           </Box>
 
+          {/** patreon link */}
+          <Typography>
+            If you find this application helpful, please consider supporting me on{' '}
+            <Link href="https://www.patreon.com/yourusername" target="_blank">
+              Patreon
+            </Link>.
+          </Typography>
+
+          {/** github repo link */}
           <Typography>
             <Link
               href="https://github.com/Gregorein/cropclip"
               target="_blank"
               rel="noopener"
             >
-              Visit our GitHub Repository
+              GitHub Repository
             </Link>
           </Typography>
           <Typography level="body-md">
