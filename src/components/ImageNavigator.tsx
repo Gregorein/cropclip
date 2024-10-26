@@ -61,7 +61,20 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const devicePixelRatio = window.devicePixelRatio || 1;
   const [cutPreviews, setCutPreviews] = useState<{ [key: string]: string }>({});
-
+  const [expandedAccordions, setExpandedAccordions] = useState<number[]>([]);
+  useEffect(() => {
+    setExpandedAccordions([activeImageIndex]);
+  }, [activeImageIndex]);
+  const handleAccordionChange = (index: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpandedAccordions((prevExpanded) => {
+      if (isExpanded) {
+        return [...prevExpanded, index];
+      } else {
+        return prevExpanded.filter((i) => i !== index);
+      }
+    });
+  };
+  
   useEffect(() => {
     return () => {
       // Clean up all object URLs
@@ -72,8 +85,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   }, [cutPreviews]);  
 
   const getCutPreviewUrl = (imageIndex: number, cut: CutType): string => {
-    const key = `${imageIndex}-${cut.id}`;
-    if (cutPreviews[key]) {
+    const key = `${imageIndex}-${cut.id}-${cut.x}-${cut.y}-${cut.width}-${cut.height}`;    if (cutPreviews[key]) {
       return cutPreviews[key];
     } else {
       generateCutPreview(imageIndex, cut);
@@ -291,7 +303,6 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         <Tooltip title="Previous Image" placement="top">
           <IconButton
             onClick={onPrevImage}
-            disabled={activeImageIndex === 0}
             variant="outlined"
           >
             <ArrowLeft />
@@ -303,7 +314,6 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         <Tooltip title="Next Image" placement="top">
           <IconButton
             onClick={onNextImage}
-            disabled={activeImageIndex === files.length - 1}
             variant="outlined"
           >
             <ArrowRight />
@@ -326,16 +336,12 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
           return (
             <React.Fragment key={index}>
               {hasCuts ? (
-                // Accordion for images with cuts
-                <Accordion sx={{ bgcolor: downloadedCuts[index] ? "success.200" : "transparent" }}>
-                  <AccordionSummary
-                    // expandIcon={<ChevronDown />}
-                    // sx={{
-                    //   padding: "0 8px",
-                    //   minHeight: "32px",
-                    //   "&.Mui-expanded": { minHeight: "32px" },
-                    // }}
-                  >
+                <Accordion
+                  sx={{ bgcolor: downloadedCuts[index] ? "success.200" : "transparent" }}
+                  expanded={expandedAccordions.includes(index)}
+                  onChange={handleAccordionChange(index)}
+                >
+                  <AccordionSummary>
                     <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
                       <Typography
                         noWrap
