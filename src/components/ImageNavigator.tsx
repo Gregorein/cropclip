@@ -57,14 +57,18 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   const previewRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
   const [imgElement, setImgElement] = useState<HTMLImageElement | null>(null);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const devicePixelRatio = window.devicePixelRatio || 1;
   const [cutPreviews, setCutPreviews] = useState<{ [key: string]: string }>({});
   const [expandedAccordions, setExpandedAccordions] = useState<number[]>([]);
+  const [cutPreviewUrls, setCutPreviewUrls] = useState<{ [key: string]: string }>({});
+  
   useEffect(() => {
     setExpandedAccordions([activeImageIndex]);
   }, [activeImageIndex]);
+
   const handleAccordionChange = (index: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedAccordions((prevExpanded) => {
       if (isExpanded) {
@@ -85,16 +89,19 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   }, [cutPreviews]);  
 
   const getCutPreviewUrl = (imageIndex: number, cut: CutType): string => {
-    const key = `${imageIndex}-${cut.id}-${cut.x}-${cut.y}-${cut.width}-${cut.height}`;    if (cutPreviews[key]) {
+    const key = `${imageIndex}-${cut.id}-${cut.x}-${cut.y}-${cut.width}-${cut.height}`;
+    if (cutPreviews[key]) {
       return cutPreviews[key];
     } else {
-      generateCutPreview(imageIndex, cut);
+      generateCutPreview(imageIndex, cut, key);
       return "";
     }
   };
   
-  const generateCutPreview = (imageIndex: number, cut: CutType) => {
+  const generateCutPreview = (imageIndex: number, cut: CutType, key: string) => {
     const file = files[imageIndex];
+    const objectUrl = URL.createObjectURL(file);
+  
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
@@ -126,14 +133,25 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   
       setCutPreviews((prev) => ({
         ...prev,
-        [`${imageIndex}-${cut.id}`]: dataUrl,
+        [key]: dataUrl,
       }));
+  
+      // Revoke the object URL after image has loaded
+      URL.revokeObjectURL(objectUrl);
     };
-    img.src = URL.createObjectURL(file);
-  };  
+    img.onerror = () => {
+      console.error("Failed to load cut preview.");
+      URL.revokeObjectURL(objectUrl);
+    };
+    img.src = objectUrl;
+  };
 
   useEffect(() => {
     if (!previewRef.current || files.length === 0) return;
+
+    const file = files[activeImageIndex];
+    const objectUrl = URL.createObjectURL(file);
+    setImgUrl(objectUrl);
 
     const img = new Image();
     img.onload = () => {
@@ -169,12 +187,16 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
       context.fillStyle = "rgba(0, 123, 255, 0.2)";
       context.fillRect(rectX, rectY, rectWidth, rectHeight);
     };
-    img.src = URL.createObjectURL(files[activeImageIndex]);
+    img.onerror = () => {
+      console.error("Failed to load image preview.");
+    };
+    img.src = objectUrl;
 
     return () => {
-      URL.revokeObjectURL(img.src);
+      // Clean up the object URL
+      URL.revokeObjectURL(objectUrl);
     };
-  }, [files, activeImageIndex, viewport, theme, devicePixelRatio]);
+  }, [files, activeImageIndex, viewport, theme, devicePixelRatio]); 
 
   // Mouse event handlers
   const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -374,7 +396,10 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                             <Avatar
                               variant="outlined"
                               src={getCutPreviewUrl(index, cut)}
-                              sx={{ width: 32, height: 32, mr: 1 }}
+                              sx={{
+                                mr: 1,
+                                borderRadius: 4
+                              }}
                             />
                             <Typography sx={{ fontSize: "12px", flexGrow: 1 }}>
                               Cut {cuts[index].indexOf(cut) + 1}
