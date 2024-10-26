@@ -44,11 +44,29 @@ An intuitive web application for cutting and exporting specific regions from ima
 
 ## **Demo**
 
-Check out the live demo [here](#). <!-- Provide the link to your live demo if available -->
+Check out the live demo [here](https://cropclip.click)
 
 ---
 
-## **Getting Started**
+## **ToDo's**
+[] test project in major browsers:  
+   [] Chrome,  
+   [] Firefox, 
+   [] Safari,  
+   [] Edge,  
+   [] Opera.  
+[] verify it works on tablet screens.  
+[] mobile device support.  
+[] test most used file formats.  
+[] support saving in different formats.  
+[] graceful error handling.  
+[] nice issue raising for non technical users.  
+[] also a nice feedback & feature suggestion something tool.  
+[] better accessibility - more keyboard shortcuts, better contrasts.  
+[] performance optimisation.  
+[] downloadable PWA!  
+
+## **Developing**
 
 ### **Prerequisites**
 
