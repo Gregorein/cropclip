@@ -17,6 +17,7 @@ type ImageCanvasProps = {
   cutsRef: React.RefObject<HTMLDivElement>;
   canvasWidth: number;
   canvasHeight: number;
+  zoom: number; // Add zoom prop
 };
 
 const ImageCanvas: React.FC<ImageCanvasProps> = ({
@@ -28,6 +29,7 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
   cutsRef,
   canvasWidth,
   canvasHeight,
+  zoom,
 }) => {
   return (
     <Box
@@ -50,14 +52,19 @@ const ImageCanvas: React.FC<ImageCanvasProps> = ({
           height: "100%",
         }}
       />
-      {cuts.map(({ id, ...otherProps }) => (
+      {cuts.map(({ id, x, y, width, height }) => (
         <Cut
           key={id}
           id={id}
-          {...otherProps}
+          x={x * zoom}
+          y={y * zoom}
+          width={width * zoom}
+          height={height * zoom}
           onRemove={() => onRemoveCut(id)}
-          onMove={(x, y) => onMoveCut(id, x, y)}
-          onResize={(x, y, w, h) => onResizeCut(id, x, y, w, h)}
+          onMove={(newX, newY) => onMoveCut(id, newX / zoom, newY / zoom)}
+          onResize={(newX, newY, newWidth, newHeight) =>
+            onResizeCut(id, newX / zoom, newY / zoom, newWidth / zoom, newHeight / zoom)
+          }
         />
       ))}
     </Box>

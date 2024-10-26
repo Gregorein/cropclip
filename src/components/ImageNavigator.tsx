@@ -58,13 +58,11 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
   const previewRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
   const [imgElement, setImgElement] = useState<HTMLImageElement | null>(null);
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const devicePixelRatio = window.devicePixelRatio || 1;
   const [cutPreviews, setCutPreviews] = useState<{ [key: string]: string }>({});
   const [expandedAccordions, setExpandedAccordions] = useState<number[]>([]);
-  const [cutPreviewUrls, setCutPreviewUrls] = useState<{ [key: string]: string }>({});
   
   useEffect(() => {
     setExpandedAccordions([activeImageIndex]);
@@ -152,7 +150,6 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
 
     const file = files[activeImageIndex];
     const objectUrl = URL.createObjectURL(file);
-    setImgUrl(objectUrl);
 
     const img = new Image();
     img.onload = () => {
@@ -473,7 +470,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
           <Button
             onClick={() => handleDownloadAll()}
             startDecorator={<FileArchive />}
-            disabled={!hasCuts}
+            disabled={!hasCutsInAnyImage}
             color="success"
             fullWidth
             sx={{

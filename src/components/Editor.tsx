@@ -138,6 +138,7 @@ const Editor: React.FC<EditorProps> = ({
           cutsRef={cutsRef}
           canvasWidth={canvasWidth * zoom}
           canvasHeight={canvasHeight * zoom}
+          zoom={zoom}
         />
       </Box>
 
