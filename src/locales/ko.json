@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "CropClip 소개",
+    "description": "CropClip은 이미지에서 섹션을 잘라내는 간단한 도구입니다. 이미지를 로드하고, 컷을 추가하고, 조정한 후 잘린 섹션을 다운로드하세요.",
+    "keyboardShortcuts": "키보드 단축키:",
+    "shortcut1": "스페이스바: 새로운 컷 추가",
+    "shortcut2": "왼쪽/오른쪽 화살표: 이미지 간 이동",
+    "support": "이 애플리케이션이 도움이 되었다면, 다음에서 지원을 고려해 주세요",
+    "patreon": "Patreon.",
+    "github": "GitHub 저장소",
+    "version": "버전: {{version}}"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "darkMode": "다크 모드"
+  },
+  "imageNavigator": {
+    "previousImage": "이전 이미지",
+    "nextImage": "다음 이미지",
+    "cutCurrentImage": "현재 이미지 자르기",
+    "cutAndZipAllImages": "모든 이미지 자르고 압축하기",
+    "cutLabel": "컷 {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "여기를 클릭하거나 이미지를 드롭하세요",
+    "supportedFormats": "지원되는 형식: JPEG, PNG, GIF 등"
+  },
+  "toolbar": {
+    "loadImages": "이미지 로드",
+    "addCut": "새 컷 추가",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "resetZoom": "줌 초기화",
+    "fitToWindow": "창에 맞추기"
+  },
+  "common": {
+    "close": "닫기",
+    "supportPatreon": "Patreon에서 지원",
+    "githubRepo": "GitHub 저장소"
+  }
+}

@@ -19,6 +19,7 @@ import {
 import { ArrowLeft, ArrowRight, FileArchive, ImageDown, XCircle } from "lucide-react";
 import { useTheme } from "@mui/joy/styles";
 import { CutType } from "./Cut";
+import { useTranslation } from "react-i18next";
 
 type ImageNavigatorProps = {
   files: File[];
@@ -57,13 +58,14 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
 }) => {
   const previewRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
+  const { t } = useTranslation();
   const [imgElement, setImgElement] = useState<HTMLImageElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const devicePixelRatio = window.devicePixelRatio || 1;
   const [cutPreviews, setCutPreviews] = useState<{ [key: string]: string }>({});
   const [expandedAccordions, setExpandedAccordions] = useState<number[]>([]);
-  
+
   useEffect(() => {
     setExpandedAccordions([activeImageIndex]);
   }, [activeImageIndex]);
@@ -77,7 +79,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
       }
     });
   };
-  
+
   useEffect(() => {
     return () => {
       // Clean up all object URLs
@@ -96,26 +98,26 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
       return "";
     }
   };
-  
+
   const generateCutPreview = (imageIndex: number, cut: CutType, key: string) => {
     const file = files[imageIndex];
     const objectUrl = URL.createObjectURL(file);
-  
+
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d")!;
       const { x, y, width, height } = cut;
-  
+
       canvas.width = 32;
       canvas.height = 32;
-  
+
       // Calculate scale to fit the cut into the preview size
       const scale = Math.min(32 / width, 32 / height);
-  
+
       const drawWidth = width * scale;
       const drawHeight = height * scale;
-  
+
       context.drawImage(
         img,
         x,
@@ -127,14 +129,14 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         drawWidth,
         drawHeight
       );
-  
+
       const dataUrl = canvas.toDataURL("image/png");
-  
+
       setCutPreviews((prev) => ({
         ...prev,
         [key]: dataUrl,
       }));
-  
+
       // Revoke the object URL after image has loaded
       URL.revokeObjectURL(objectUrl);
     };
@@ -320,10 +322,12 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <Tooltip title="Previous Image" placement="top">
+        <Tooltip title={t('imageNavigator.previousImage')} placement="top">
           <IconButton
             onClick={onPrevImage}
             variant="outlined"
+            aria-label={t('imageNavigator.previousImage')}
+            disabled={activeImageIndex === 0}
           >
             <ArrowLeft />
           </IconButton>
@@ -331,10 +335,12 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         <Typography sx={{ textAlign: "center", fontSize: "14px" }}>
           {activeImageIndex + 1} / {files.length}
         </Typography>
-        <Tooltip title="Next Image" placement="top">
+        <Tooltip title={t('imageNavigator.nextImage')} placement="top">
           <IconButton
             onClick={onNextImage}
             variant="outlined"
+            aria-label={t('imageNavigator.nextImage')}
+            disabled={activeImageIndex === files.length - 1}
           >
             <ArrowRight />
           </IconButton>
@@ -381,9 +387,8 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                   </AccordionSummary>
                   <AccordionDetails sx={{ padding: 0 }}>
                     <List>
-                      {cuts[index].map((cut) => {
+                      {cuts[index].map((cut, cutIndex) => {
                         const preview = getCutPreviewUrl(index, cut);
-                        
                         return (
                           <ListItem key={cut.id} sx={{ padding: "4px 8px" }}>
                             <Box
@@ -396,11 +401,12 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                               {/* Cut Image Preview */}
                               {preview ? (
                                 <Avatar
-                                  variant="outlined"
                                   src={preview}
                                   sx={{
                                     mr: 1,
-                                    borderRadius: 4
+                                    borderRadius: 4,
+                                    width: 32,
+                                    height: 32,
                                   }}
                                 />
                               ) : (
@@ -411,7 +417,7 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                                 />
                               )}
                               <Typography sx={{ fontSize: "12px", flexGrow: 1 }}>
-                                Cut {cuts[index].indexOf(cut) + 1}
+                                {t('imageNavigator.cutLabel', { number: cutIndex + 1 })}
                               </Typography>
                               {/* Remove Cut Button */}
                               <IconButton
@@ -419,13 +425,14 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                                 variant="plain"
                                 color="danger"
                                 onClick={() => handleRemoveCut(index, cut.id)}
+                                aria-label={t('common.close')}
                               >
                                 <XCircle size={16} />
                               </IconButton>
                             </Box>
                           </ListItem>
-                        )}
-                      )}
+                        );
+                      })}
                     </List>
                   </AccordionDetails>
                 </Accordion>
@@ -451,34 +458,32 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
         })}
       </List>
 
-
       {/* Download Buttons */}
       <ButtonGroup variant="soft" orientation="vertical">
-        <Button
-          startDecorator={<ImageDown />}
-          onClick={() => handleDownload(activeImageIndex)}
-          disabled={!hasCuts}
-          fullWidth
-          sx={{
-            whiteSpace: "nowrap",
-          }}
-          
-        >
-          Cut current image
-        </Button>
-        {hasCutsInAnyImage && (
+        <Tooltip title={t('imageNavigator.cutCurrentImage')} placement="left">
           <Button
-            onClick={() => handleDownloadAll()}
-            startDecorator={<FileArchive />}
-            disabled={!hasCutsInAnyImage}
-            color="success"
+            startDecorator={<ImageDown />}
+            onClick={() => handleDownload(activeImageIndex)}
+            disabled={!hasCuts}
             fullWidth
-            sx={{
-              whiteSpace: "nowrap",
-            }}
+            aria-label={t('imageNavigator.cutCurrentImage')}
           >
-            Cut & zip all images
+            {t('imageNavigator.cutCurrentImage')}
           </Button>
+        </Tooltip>
+        {hasCutsInAnyImage && (
+          <Tooltip title={t('imageNavigator.cutAndZipAllImages')} placement="left">
+            <Button
+              onClick={() => handleDownloadAll()}
+              startDecorator={<FileArchive />}
+              disabled={!hasCutsInAnyImage}
+              color="success"
+              fullWidth
+              aria-label={t('imageNavigator.cutAndZipAllImages')}
+            >
+              {t('imageNavigator.cutAndZipAllImages')}
+            </Button>
+          </Tooltip>
         )}
       </ButtonGroup>
     </Box>

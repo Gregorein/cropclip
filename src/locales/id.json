@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "Tentang CropClip",
+    "description": "CropClip adalah alat sederhana untuk memotong bagian dari gambar Anda. Muat gambar Anda, tambahkan potongan, sesuaikan mereka, dan unduh bagian yang dipotong.",
+    "keyboardShortcuts": "Shortcut Keyboard:",
+    "shortcut1": "Spasi: Tambahkan potongan baru",
+    "shortcut2": "Panah Kiri/Kanan: Navigasi antar gambar",
+    "support": "Jika Anda merasa aplikasi ini bermanfaat, silakan pertimbangkan untuk mendukung saya di",
+    "patreon": "Patreon.",
+    "github": "Repositori GitHub",
+    "version": "Versi: {{version}}"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "darkMode": "Mode Gelap"
+  },
+  "imageNavigator": {
+    "previousImage": "Gambar Sebelumnya",
+    "nextImage": "Gambar Berikutnya",
+    "cutCurrentImage": "Potong gambar saat ini",
+    "cutAndZipAllImages": "Potong & zip semua gambar",
+    "cutLabel": "Potongan {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Klik atau seret gambar ke sini",
+    "supportedFormats": "Format yang didukung: JPEG, PNG, GIF, dll."
+  },
+  "toolbar": {
+    "loadImages": "Muat gambar",
+    "addCut": "Tambahkan potongan baru",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil",
+    "resetZoom": "Atur ulang zoom",
+    "fitToWindow": "Sesuaikan ke jendela"
+  },
+  "common": {
+    "close": "Tutup",
+    "supportPatreon": "Dukung di Patreon",
+    "githubRepo": "Repositori GitHub"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "About CropClip",
+    "description": "CropClip is a simple tool to cut out sections from your images. Load your images, add cuts, adjust them, and download the cropped sections.",
+    "keyboardShortcuts": "Keyboard Shortcuts:",
+    "shortcut1": "Space: Add a new cut",
+    "shortcut2": "Arrow Left/Right: Navigate between images",
+    "support": "If you find this application helpful, please consider supporting me on",
+    "patreon": "Patreon.",
+    "github": "GitHub Repository",
+    "version": "Version: {{version}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "darkMode": "Dark Mode"
+  },
+  "imageNavigator": {
+    "previousImage": "Previous Image",
+    "nextImage": "Next Image",
+    "cutCurrentImage": "Cut current image",
+    "cutAndZipAllImages": "Cut & zip all images",
+    "cutLabel": "Cut {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Click or drop images here",
+    "supportedFormats": "Supported formats: JPEG, PNG, GIF, etc."
+  },
+  "toolbar": {
+    "loadImages": "Load image(s)",
+    "addCut": "Add a new cut",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetZoom": "Reset Zoom",
+    "fitToWindow": "Fit to Window"
+  },
+  "common": {
+    "close": "Close",
+    "supportPatreon": "Support on Patreon",
+    "githubRepo": "GitHub Repository"
+  }
+}

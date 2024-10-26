@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "CropClip Hakkında",
+    "description": "CropClip, resimlerinizden bölümler kesmek için basit bir araçtır. Resimlerinizi yükleyin, kesitler ekleyin, ayarlayın ve kesilmiş bölümleri indirin.",
+    "keyboardShortcuts": "Klavye Kısayolları:",
+    "shortcut1": "Boşluk: Yeni bir kesit ekleyin",
+    "shortcut2": "Sol/Sağ Ok: Resimler arasında gezinme",
+    "support": "Bu uygulamayı faydalı bulduysanız, lütfen beni",
+    "patreon": "Patreon'da desteklemeyi düşünün.",
+    "github": "GitHub Deposu",
+    "version": "Sürüm: {{version}}"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "language": "Dil",
+    "darkMode": "Koyu Mod"
+  },
+  "imageNavigator": {
+    "previousImage": "Önceki Resim",
+    "nextImage": "Sonraki Resim",
+    "cutCurrentImage": "Mevcut resmi kes",
+    "cutAndZipAllImages": "Tüm resimleri kes ve ziple",
+    "cutLabel": "Kesit {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Buraya tıklayın veya resimleri bırakın",
+    "supportedFormats": "Desteklenen formatlar: JPEG, PNG, GIF vb."
+  },
+  "toolbar": {
+    "loadImages": "Resim(leri) Yükle",
+    "addCut": "Yeni bir kesit ekle",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "resetZoom": "Yakınlaştırmayı Sıfırla",
+    "fitToWindow": "Pencereye Sığdır"
+  },
+  "common": {
+    "close": "Kapat",
+    "supportPatreon": "Patreon'da Destekle",
+    "githubRepo": "GitHub Deposu"
+  }
+}

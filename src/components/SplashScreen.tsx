@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/joy";
 import { Crop } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type SplashScreenProps = {
   onLoadImages: () => void;
@@ -13,6 +14,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
   handleOnDrag,
   handleOnDrop,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       component="div"
@@ -43,11 +46,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
         color="primary.500"
       />
       <Typography color="primary" level="h3" sx={{ mt: 2 }}>
-        click or drop images here
+        {t('splashScreen.clickOrDrop')}
       </Typography>
       {/* Suggestion: Add a descriptive subtitle */}
       <Typography color="neutral" level="body-md" sx={{ mt: 1 }}>
-        Supported formats: JPEG, PNG, GIF, etc.
+        {t('splashScreen.supportedFormats')}
       </Typography>
     </Box>
   );

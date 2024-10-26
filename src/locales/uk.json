@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "Про CropClip",
+    "description": "CropClip — це простий інструмент для вирізання секцій з ваших зображень. Завантажте свої зображення, додайте вирізи, налаштуйте їх і завантажте обрізані секції.",
+    "keyboardShortcuts": "Клавішні скорочення:",
+    "shortcut1": "Пробіл: Додати новий виріз",
+    "shortcut2": "Стрілки вліво/вправо: Переміщення між зображеннями",
+    "support": "Якщо ви вважаєте цей додаток корисним, будь ласка, розгляньте можливість підтримки на",
+    "patreon": "Patreon.",
+    "github": "Репозиторій GitHub",
+    "version": "Версія: {{version}}"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "language": "Мова",
+    "darkMode": "Темний режим"
+  },
+  "imageNavigator": {
+    "previousImage": "Попереднє зображення",
+    "nextImage": "Наступне зображення",
+    "cutCurrentImage": "Обрізати поточне зображення",
+    "cutAndZipAllImages": "Обрізати та стиснути всі зображення",
+    "cutLabel": "Обрізок {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Натисніть або перетягніть зображення сюди",
+    "supportedFormats": "Підтримувані формати: JPEG, PNG, GIF тощо."
+  },
+  "toolbar": {
+    "loadImages": "Завантажити зображення",
+    "addCut": "Додати новий виріз",
+    "zoomIn": "Збільшити",
+    "zoomOut": "Зменшити",
+    "resetZoom": "Скинути збільшення",
+    "fitToWindow": "Підганяти під вікно"
+  },
+  "common": {
+    "close": "Закрити",
+    "supportPatreon": "Підтримати на Patreon",
+    "githubRepo": "Репозиторій GitHub"
+  }
+}

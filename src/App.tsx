@@ -15,6 +15,7 @@ import Editor from "./components/Editor";
 import { CutType, CUT_SIZE } from "./components/Cut";
 import AboutModal from "./components/AboutModal";
 import { handleFileSelection, processCuts } from "./utils";
+import SettingsModal from "./components/SettingsModal";
 
 const App = () => {
   // State declarations
@@ -360,6 +361,7 @@ const App = () => {
       )}
 
       <AboutModal />
+      <SettingsModal />
     </Main>
   );
 };

@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "Acerca de CropClip",
+    "description": "CropClip es una herramienta sencilla para recortar secciones de tus imágenes. Carga tus imágenes, agrega recortes, ajústalos y descarga las secciones recortadas.",
+    "keyboardShortcuts": "Atajos de Teclado:",
+    "shortcut1": "Espacio: Agregar un nuevo recorte",
+    "shortcut2": "Flechas Izquierda/Derecha: Navegar entre imágenes",
+    "support": "Si encuentras útil esta aplicación, por favor considera apoyarme en",
+    "patreon": "Patreon.",
+    "github": "Repositorio de GitHub",
+    "version": "Versión: {{version}}"
+  },
+  "settings": {
+    "title": "Configuraciones",
+    "language": "Idioma",
+    "darkMode": "Modo Oscuro"
+  },
+  "imageNavigator": {
+    "previousImage": "Imagen Anterior",
+    "nextImage": "Imagen Siguiente",
+    "cutCurrentImage": "Recortar imagen actual",
+    "cutAndZipAllImages": "Recortar y comprimir todas las imágenes",
+    "cutLabel": "Recorte {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Haz clic o suelta imágenes aquí",
+    "supportedFormats": "Formatos soportados: JPEG, PNG, GIF, etc."
+  },
+  "toolbar": {
+    "loadImages": "Cargar imagen(es)",
+    "addCut": "Agregar un nuevo recorte",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "resetZoom": "Reiniciar Zoom",
+    "fitToWindow": "Ajustar a la Ventana"
+  },
+  "common": {
+    "close": "Cerrar",
+    "supportPatreon": "Apoyar en Patreon",
+    "githubRepo": "Repositorio de GitHub"
+  }
+}

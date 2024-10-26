@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "حول CropClip",
+    "description": "CropClip هو أداة بسيطة لقص أقسام من صورك. قم بتحميل صورك، أضف القصات، اضبطها، وقم بتنزيل الأقسام المقطوعة.",
+    "keyboardShortcuts": "اختصارات لوحة المفاتيح:",
+    "shortcut1": "المسافة: إضافة قَصّة جديدة",
+    "shortcut2": "السهم الأيسر/الأيمن: التنقل بين الصور",
+    "support": "إذا وجدت هذا التطبيق مفيدًا، يرجى التفكير في دعمي على",
+    "patreon": "Patreon.",
+    "github": "مستودع GitHub",
+    "version": "الإصدار: {{version}}"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "language": "اللغة",
+    "darkMode": "الوضع الداكن"
+  },
+  "imageNavigator": {
+    "previousImage": "الصورة السابقة",
+    "nextImage": "الصورة التالية",
+    "cutCurrentImage": "قص الصورة الحالية",
+    "cutAndZipAllImages": "قص وضغط جميع الصور",
+    "cutLabel": "قَصّة {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "انقر أو اسحب الصور هنا",
+    "supportedFormats": "الصيغ المدعومة: JPEG، PNG، GIF، إلخ."
+  },
+  "toolbar": {
+    "loadImages": "تحميل الصور",
+    "addCut": "إضافة قَصّة جديدة",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير",
+    "resetZoom": "إعادة تعيين التكبير",
+    "fitToWindow": "ملائمة النافذة"
+  },
+  "common": {
+    "close": "إغلاق",
+    "supportPatreon": "دعم على Patreon",
+    "githubRepo": "مستودع GitHub"
+  }
+}

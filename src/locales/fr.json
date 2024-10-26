@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "À propos de CropClip",
+    "description": "CropClip est un outil simple pour découper des sections de vos images. Chargez vos images, ajoutez des découpes, ajustez-les et téléchargez les sections découpées.",
+    "keyboardShortcuts": "Raccourcis Clavier :",
+    "shortcut1": "Espace : Ajouter une nouvelle découpe",
+    "shortcut2": "Flèche Gauche/Droite : Naviguer entre les images",
+    "support": "Si vous trouvez cette application utile, veuillez envisager de me soutenir sur",
+    "patreon": "Patreon.",
+    "github": "Dépôt GitHub",
+    "version": "Version : {{version}}"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "darkMode": "Mode Sombre"
+  },
+  "imageNavigator": {
+    "previousImage": "Image Précédente",
+    "nextImage": "Image Suivante",
+    "cutCurrentImage": "Découper l'image actuelle",
+    "cutAndZipAllImages": "Découper et compresser toutes les images",
+    "cutLabel": "Découpe {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Cliquez ou déposez des images ici",
+    "supportedFormats": "Formats pris en charge : JPEG, PNG, GIF, etc."
+  },
+  "toolbar": {
+    "loadImages": "Charger image(s)",
+    "addCut": "Ajouter une nouvelle découpe",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Rétrécir",
+    "resetZoom": "Réinitialiser le Zoom",
+    "fitToWindow": "Ajuster à la Fenêtre"
+  },
+  "common": {
+    "close": "Fermer",
+    "supportPatreon": "Soutenir sur Patreon",
+    "githubRepo": "Dépôt GitHub"
+  }
+}

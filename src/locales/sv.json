@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "Om CropClip",
+    "description": "CropClip är ett enkelt verktyg för att klippa ut sektioner från dina bilder. Ladda upp dina bilder, lägg till klipp, justera dem och ladda ner de beskurna sektionerna.",
+    "keyboardShortcuts": "Tangentbordsgenvägar:",
+    "shortcut1": "Mellanslag: Lägg till ett nytt klipp",
+    "shortcut2": "Vänster/Höger pil: Navigera mellan bilder",
+    "support": "Om du tycker att den här applikationen är användbar, vänligen överväg att stödja mig på",
+    "patreon": "Patreon.",
+    "github": "GitHub Repository",
+    "version": "Version: {{version}}"
+  },
+  "settings": {
+    "title": "Inställningar",
+    "language": "Språk",
+    "darkMode": "Mörkt läge"
+  },
+  "imageNavigator": {
+    "previousImage": "Föregående bild",
+    "nextImage": "Nästa bild",
+    "cutCurrentImage": "Klipp aktuell bild",
+    "cutAndZipAllImages": "Klipp & zip alla bilder",
+    "cutLabel": "Klipp {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Klicka eller släpp bilder här",
+    "supportedFormats": "Stödda format: JPEG, PNG, GIF, etc."
+  },
+  "toolbar": {
+    "loadImages": "Ladda upp bild(er)",
+    "addCut": "Lägg till ett nytt klipp",
+    "zoomIn": "Zooma in",
+    "zoomOut": "Zooma ut",
+    "resetZoom": "Återställ zoom",
+    "fitToWindow": "Anpassa till fönster"
+  },
+  "common": {
+    "close": "Stäng",
+    "supportPatreon": "Stöd på Patreon",
+    "githubRepo": "GitHub Repository"
+  }
+}

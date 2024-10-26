@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "CropClipについて",
+    "description": "CropClipは、画像からセクションを切り取るためのシンプルなツールです。画像を読み込み、切り取りを追加し、調整して、切り取ったセクションをダウンロードします。",
+    "keyboardShortcuts": "キーボードショートカット：",
+    "shortcut1": "スペース：新しい切り取りを追加",
+    "shortcut2": "左/右矢印：画像間を移動",
+    "support": "このアプリケーションが役立つと感じたら、ぜひ私をサポートしてください",
+    "patreon": "Patreon。",
+    "github": "GitHubリポジトリ",
+    "version": "バージョン：{{version}}"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "darkMode": "ダークモード"
+  },
+  "imageNavigator": {
+    "previousImage": "前の画像",
+    "nextImage": "次の画像",
+    "cutCurrentImage": "現在の画像を切り取る",
+    "cutAndZipAllImages": "すべての画像を切り取り & 圧縮",
+    "cutLabel": "切り取り {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "ここをクリックするか、画像をドラッグ＆ドロップ",
+    "supportedFormats": "対応フォーマット：JPEG、PNG、GIFなど"
+  },
+  "toolbar": {
+    "loadImages": "画像を読み込む",
+    "addCut": "新しい切り取りを追加",
+    "zoomIn": "ズームイン",
+    "zoomOut": "ズームアウト",
+    "resetZoom": "ズームリセット",
+    "fitToWindow": "ウィンドウに合わせる"
+  },
+  "common": {
+    "close": "閉じる",
+    "supportPatreon": "Patreonでサポート",
+    "githubRepo": "GitHubリポジトリ"
+  }
+}

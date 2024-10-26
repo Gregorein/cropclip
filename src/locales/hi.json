@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "CropClip के बारे में",
+    "description": "CropClip एक सरल उपकरण है जो आपकी छवियों से अनुभाग काटने के लिए है। अपनी छवियां लोड करें, कट जोड़ें, उन्हें समायोजित करें, और काटे गए अनुभाग डाउनलोड करें।",
+    "keyboardShortcuts": "कीबोर्ड शॉर्टकट्स:",
+    "shortcut1": "स्पेस: नया कट जोड़ें",
+    "shortcut2": "बाएं/दाएं तीर: छवियों के बीच नेविगेट करें",
+    "support": "यदि आपको यह एप्लिकेशन उपयोगी लगा, तो कृपया मुझे",
+    "patreon": "Patreon पर समर्थन करने पर विचार करें।",
+    "github": "GitHub रिपॉजिटरी",
+    "version": "संस्करण: {{version}}"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "darkMode": "डार्क मोड"
+  },
+  "imageNavigator": {
+    "previousImage": "पिछली छवि",
+    "nextImage": "अगली छवि",
+    "cutCurrentImage": "वर्तमान छवि काटें",
+    "cutAndZipAllImages": "सभी छवियां काटें और ज़िप करें",
+    "cutLabel": "कट {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "यहां क्लिक करें या छवियां ड्रॉप करें",
+    "supportedFormats": "समर्थित प्रारूप: JPEG, PNG, GIF, आदि।"
+  },
+  "toolbar": {
+    "loadImages": "छवि(ओं) लोड करें",
+    "addCut": "नया कट जोड़ें",
+    "zoomIn": "जूम इन",
+    "zoomOut": "जूम आउट",
+    "resetZoom": "जूम रीसेट करें",
+    "fitToWindow": "विंडो में फिट करें"
+  },
+  "common": {
+    "close": "बंद करें",
+    "supportPatreon": "Patreon पर समर्थन करें",
+    "githubRepo": "GitHub रिपॉजिटरी"
+  }
+}

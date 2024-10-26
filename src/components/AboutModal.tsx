@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { IconButton, Modal, Box, Typography, Link, Switch, useColorScheme } from "@mui/joy";
+import { IconButton, Modal, Box, Typography, Link, Tooltip } from "@mui/joy";
 import { Crop, HelpCircle } from "lucide-react";
 import packageJson from "../../package.json";
+import { useTranslation } from "react-i18next";
 
 const AboutModal: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const { mode, setMode } = useColorScheme();
+  const { t } = useTranslation();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -28,86 +29,77 @@ const AboutModal: React.FC = () => {
 
   return (
     <>
-      <IconButton
-        variant="solid"
-        color="primary"
-        onClick={handleOpen}
-        sx={{
-          position: "fixed",
-          bottom: 24,
-          left: 24,
-          zIndex: 1000,
-        }}
-      >
-        <HelpCircle />
-      </IconButton>
+      <Tooltip title={t('about.tooltip')} placement="top">
+        <IconButton
+          variant="solid"
+          color="primary"
+          onClick={handleOpen}
+          aria-label={t('about.tooltip')}
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            left: 24,
+            zIndex: 1000,
+          }}
+        >
+          <HelpCircle />
+        </IconButton>
+      </Tooltip>
 
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
           <Box
             sx={{
-            mb: 2,
-            display: "flex",
-            alignItems: "center",
-            gap: 1
-          }}
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
           >
             <Typography level="title-lg" component="h2">
-              About <Typography color="primary">CropClip</Typography>
+              {t('about.title')}
             </Typography>
-            <Box component={Crop} sx={{ ml: 0.5, strokeWidth: 3 }} size={21}  color="primary.500" />
+            <Box component={Crop} sx={{ ml: 0.5, strokeWidth: 3 }} size={21} color="primary.500" />
           </Box>
 
-          {/** description */}
+          {/** Description */}
           <Typography>
-            CropClip is a simple tool to cut out sections from your images.
-            Load your images, add cuts, adjust them, and download the cropped
-            sections.
+            {t('about.description')}
           </Typography>
 
-          {/** keyboard shortcuts */}
+          {/** Keyboard Shortcuts */}
           <Typography>
-            Keyboard Shortcuts:
+            {t('about.keyboardShortcuts')}
             <ul>
               <li>
-                <strong>Space:</strong> Add a new cut
+                <strong>{t('about.shortcut1')}</strong>
               </li>
               <li>
-                <strong>Arrow Left/Right:</strong> Navigate between images
+                <strong>{t('about.shortcut2')}</strong>
               </li>
             </ul>
           </Typography>
 
-          {/** mode toggle */}
-          <Box sx={{ display: 'flex', alignItems: 'center'}}>
-            <Typography sx={{ mr: 1 }}>Dark Mode</Typography>
-            <Switch
-              checked={mode === 'dark'}
-              onChange={() => setMode(mode === 'light' ? 'dark' : 'light')}
-              variant="outlined"
-            />
-          </Box>
-
-          {/** patreon link */}
+          {/** Patreon Link */}
           <Typography>
-            If you find this application helpful, please consider supporting me on{' '}
+            {t('about.support')}{" "}
             <Link href="https://www.patreon.com/yourusername" target="_blank">
-              Patreon
+              {t('common.supportPatreon')}
             </Link>.
           </Typography>
 
-          {/** github repo link */}
+          {/** GitHub Repo Link */}
           <Typography>
             <Link
               href="https://github.com/Gregorein/cropclip"
               target="_blank"
               rel="noopener"
             >
-              GitHub Repository
+              {t('common.githubRepo')}
             </Link>
           </Typography>
           <Typography level="body-md">
-            Version: {packageJson.version}
+            {t('about.version', { version: packageJson.version })}
           </Typography>
         </Box>
       </Modal>

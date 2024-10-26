@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "O CropClip",
+    "description": "CropClip to proste narzędzie do wycinania sekcji z Twoich obrazów. Załaduj swoje obrazy, dodaj wycięcia, dostosuj je i pobierz przycięte sekcje.",
+    "keyboardShortcuts": "Skróty Klawiaturowe:",
+    "shortcut1": "Spacja: Dodaj nowe wycięcie",
+    "shortcut2": "Strzałki Lewo/Prawo: Przechodź między obrazami",
+    "support": "Jeśli uważasz, że ta aplikacja jest pomocna, proszę rozważ wsparcie mnie na",
+    "patreon": "Patreon.",
+    "github": "Repozytorium GitHub",
+    "version": "Wersja: {{version}}"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "language": "Język",
+    "darkMode": "Tryb Ciemny"
+  },
+  "imageNavigator": {
+    "previousImage": "Poprzedni Obraz",
+    "nextImage": "Następny Obraz",
+    "cutCurrentImage": "Przytnij bieżący obraz",
+    "cutAndZipAllImages": "Przytnij i skompresuj wszystkie obrazy",
+    "cutLabel": "Przycięcie {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Kliknij lub upuść tutaj obrazy",
+    "supportedFormats": "Obsługiwane formaty: JPEG, PNG, GIF itp."
+  },
+  "toolbar": {
+    "loadImages": "Załaduj obraz(y)",
+    "addCut": "Dodaj nowe wycięcie",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "resetZoom": "Resetuj Powiększenie",
+    "fitToWindow": "Dopasuj do Okna"
+  },
+  "common": {
+    "close": "Zamknij",
+    "supportPatreon": "Wspieraj na Patreon",
+    "githubRepo": "Repozytorium GitHub"
+  }
+}

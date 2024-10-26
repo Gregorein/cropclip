@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "關於 CropClip",
+    "description": "CropClip 是一個簡單的工具，用於從您的圖片中剪裁部分。載入您的圖片，添加剪裁，調整它們，然後下載剪裁的部分。",
+    "keyboardShortcuts": "鍵盤快捷鍵：",
+    "shortcut1": "空格：添加新的剪裁",
+    "shortcut2": "左右箭頭：在圖片之間導航",
+    "support": "如果您覺得這個應用程式有幫助，請考慮在",
+    "patreon": "Patreon 上支持我。",
+    "github": "GitHub 倉庫",
+    "version": "版本：{{version}}"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "語言",
+    "darkMode": "深色模式"
+  },
+  "imageNavigator": {
+    "previousImage": "上一張圖片",
+    "nextImage": "下一張圖片",
+    "cutCurrentImage": "剪裁當前圖片",
+    "cutAndZipAllImages": "剪裁並壓縮所有圖片",
+    "cutLabel": "剪裁 {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "點擊或將圖片拖放到此處",
+    "supportedFormats": "支持的格式：JPEG、PNG、GIF 等。"
+  },
+  "toolbar": {
+    "loadImages": "載入圖片",
+    "addCut": "添加新的剪裁",
+    "zoomIn": "放大",
+    "zoomOut": "縮小",
+    "resetZoom": "重置縮放",
+    "fitToWindow": "適應視窗"
+  },
+  "common": {
+    "close": "關閉",
+    "supportPatreon": "在 Patreon 上支持",
+    "githubRepo": "GitHub 倉庫"
+  }
+}

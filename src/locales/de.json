@@ -1,0 +1,42 @@
+{
+  "about": {
+    "title": "Über CropClip",
+    "description": "CropClip ist ein einfaches Werkzeug, um Abschnitte aus Ihren Bildern auszuschneiden. Laden Sie Ihre Bilder, fügen Sie Schnitte hinzu, passen Sie sie an und laden Sie die zugeschnittenen Abschnitte herunter.",
+    "keyboardShortcuts": "Tastenkombinationen:",
+    "shortcut1": "Leertaste: Einen neuen Schnitt hinzufügen",
+    "shortcut2": "Pfeiltaste links/rechts: Zwischen Bildern navigieren",
+    "support": "Wenn Sie diese Anwendung hilfreich finden, unterstützen Sie mich bitte auf",
+    "patreon": "Patreon.",
+    "github": "GitHub Repository",
+    "version": "Version: {{version}}"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "darkMode": "Dunkler Modus"
+  },
+  "imageNavigator": {
+    "previousImage": "Vorheriges Bild",
+    "nextImage": "Nächstes Bild",
+    "cutCurrentImage": "Aktuelles Bild zuschneiden",
+    "cutAndZipAllImages": "Alle Bilder zuschneiden & zippen",
+    "cutLabel": "Schnitt {{number}}"
+  },
+  "splashScreen": {
+    "clickOrDrop": "Klicken oder Bilder hier ablegen",
+    "supportedFormats": "Unterstützte Formate: JPEG, PNG, GIF usw."
+  },
+  "toolbar": {
+    "loadImages": "Bild(er) laden",
+    "addCut": "Einen neuen Schnitt hinzufügen",
+    "zoomIn": "Hineinzoomen",
+    "zoomOut": "Herauszoomen",
+    "resetZoom": "Zoom zurücksetzen",
+    "fitToWindow": "An Fenster anpassen"
+  },
+  "common": {
+    "close": "Schließen",
+    "supportPatreon": "Unterstützen auf Patreon",
+    "githubRepo": "GitHub Repository"
+  }
+}

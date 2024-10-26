@@ -8,6 +8,7 @@ import {
   RefreshCcw,
   Maximize,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type ToolbarProps = {
   onLoadImages: () => void;
@@ -28,6 +29,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onFitToWindow,
   zoomLevel,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -44,20 +47,20 @@ const Toolbar: React.FC<ToolbarProps> = ({
         boxShadow: "md",
       }}
     >
-      <Tooltip title="Load image(s)" placement="right">
-        <IconButton onClick={onLoadImages} variant="outlined">
+      <Tooltip title={t('toolbar.loadImages')} placement="right">
+        <IconButton onClick={onLoadImages} variant="outlined" aria-label={t('toolbar.loadImages')}>
           <ImageIcon />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Add a new cut (Shortcut: Space)" placement="right">
-        <IconButton onClick={onAddCut} variant="solid" color="success">
+      <Tooltip title={t('toolbar.addCut')} placement="right">
+        <IconButton onClick={onAddCut} variant="solid" color="success" aria-label={t('toolbar.addCut')}>
           <ScissorsLineDashed />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Zoom In" placement="right">
-        <IconButton onClick={onZoomIn}>
+      <Tooltip title={t('toolbar.zoomIn')} placement="right">
+        <IconButton onClick={onZoomIn} aria-label={t('toolbar.zoomIn')}>
           <ZoomIn />
         </IconButton>
       </Tooltip>
@@ -66,20 +69,20 @@ const Toolbar: React.FC<ToolbarProps> = ({
         {Math.round(zoomLevel * 100)}%
       </Typography>
 
-      <Tooltip title="Zoom Out" placement="right">
-        <IconButton onClick={onZoomOut}>
+      <Tooltip title={t('toolbar.zoomOut')} placement="right">
+        <IconButton onClick={onZoomOut} aria-label={t('toolbar.zoomOut')}>
           <ZoomOut />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Reset Zoom" placement="right">
-        <IconButton onClick={onResetZoom}>
+      <Tooltip title={t('toolbar.resetZoom')} placement="right">
+        <IconButton onClick={onResetZoom} aria-label={t('toolbar.resetZoom')}>
           <RefreshCcw />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Fit to Window" placement="right">
-        <IconButton onClick={onFitToWindow}>
+      <Tooltip title={t('toolbar.fitToWindow')} placement="right">
+        <IconButton onClick={onFitToWindow} aria-label={t('toolbar.fitToWindow')}>
           <Maximize />
         </IconButton>
       </Tooltip>
