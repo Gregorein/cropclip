@@ -14,6 +14,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Avatar,
+  CircularProgress,
 } from "@mui/joy";
 import { ArrowLeft, ArrowRight, FileArchive, ImageDown, XCircle } from "lucide-react";
 import { useTheme } from "@mui/joy/styles";
@@ -383,39 +384,51 @@ const ImageNavigator: React.FC<ImageNavigatorProps> = ({
                   </AccordionSummary>
                   <AccordionDetails sx={{ padding: 0 }}>
                     <List>
-                      {cuts[index].map((cut) => (
-                        <ListItem key={cut.id} sx={{ padding: "4px 8px" }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              width: "100%",
-                            }}
-                          >
-                            {/* Cut Image Preview */}
-                            <Avatar
-                              variant="outlined"
-                              src={getCutPreviewUrl(index, cut)}
+                      {cuts[index].map((cut) => {
+                        const preview = getCutPreviewUrl(index, cut);
+                        
+                        return (
+                          <ListItem key={cut.id} sx={{ padding: "4px 8px" }}>
+                            <Box
                               sx={{
-                                mr: 1,
-                                borderRadius: 4
+                                display: "flex",
+                                alignItems: "center",
+                                width: "100%",
                               }}
-                            />
-                            <Typography sx={{ fontSize: "12px", flexGrow: 1 }}>
-                              Cut {cuts[index].indexOf(cut) + 1}
-                            </Typography>
-                            {/* Remove Cut Button */}
-                            <IconButton
-                              size="sm"
-                              variant="plain"
-                              color="danger"
-                              onClick={() => handleRemoveCut(index, cut.id)}
                             >
-                              <XCircle size={16} />
-                            </IconButton>
-                          </Box>
-                        </ListItem>
-                      ))}
+                              {/* Cut Image Preview */}
+                              {preview ? (
+                                <Avatar
+                                  variant="outlined"
+                                  src={preview}
+                                  sx={{
+                                    mr: 1,
+                                    borderRadius: 4
+                                  }}
+                                />
+                              ) : (
+                                <CircularProgress 
+                                  sx={{
+                                    mr: 1,
+                                  }}
+                                />
+                              )}
+                              <Typography sx={{ fontSize: "12px", flexGrow: 1 }}>
+                                Cut {cuts[index].indexOf(cut) + 1}
+                              </Typography>
+                              {/* Remove Cut Button */}
+                              <IconButton
+                                size="sm"
+                                variant="plain"
+                                color="danger"
+                                onClick={() => handleRemoveCut(index, cut.id)}
+                              >
+                                <XCircle size={16} />
+                              </IconButton>
+                            </Box>
+                          </ListItem>
+                        )}
+                      )}
                     </List>
                   </AccordionDetails>
                 </Accordion>

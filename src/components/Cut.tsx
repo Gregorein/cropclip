@@ -63,9 +63,21 @@ const Cut: React.FC<CutProps> = ({
         position: "absolute",
       }}
     >
+      <IconButton
+        color="primary"
+        variant="solid"
+        sx={{
+          position: "absolute",
+          top: -16,
+          left: -16,
+          zIndex: 1,
+        }}
+        onClick={onRemove}
+      >
+        <X />
+      </IconButton>
       <Box
         sx={{
-          position: "relative",
           width: "100%",
           height: "100%",
           transition: `
@@ -87,20 +99,6 @@ const Cut: React.FC<CutProps> = ({
           },
         }}
       >
-        <IconButton
-          color="primary"
-          variant="solid"
-          sx={{
-            position: "absolute",
-            top: -20,
-            left: -20,
-            zIndex: 2,
-          }}
-          onClick={onRemove}
-        >
-          <X />
-        </IconButton>
-
         {/* Corner Indicators */}
         <Box
           component={Grip}
